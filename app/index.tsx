@@ -5,13 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import Header from '@/components/Header';
-import QRCode from 'react-native-qrcode-svg';
+import QRcode from '@/components/QRcode';
 
 const index = () => {
   const { height } = Dimensions.get('screen');
   const [hidden, setHidden] = useState(true);
-  const [history, setHistory] = useState(true);
-  const [platform, setPlatform] = useState('phone');
 
   const contacts = [
     { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
@@ -79,15 +77,7 @@ const index = () => {
               </View>
             </View>
           ) : (
-            <View
-              className='flex-row items-center justify-center h-full w-full mx-4'>
-              <QRCode
-                value="https://github.com/your-dev-profile"
-                size={200}
-                color="black"
-                backgroundColor="white"
-              />
-            </View>
+            <QRcode />
           )}
         </View>
       </View>
