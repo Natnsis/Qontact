@@ -4,20 +4,37 @@ import { NAV_THEME } from '@/lib/theme';
 import { ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'nativewind';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+import { useEffect } from 'react';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
-  const { colorScheme } = useColorScheme();
+  const [loaded, error] = useFonts({
+    'regular': require('@/assets/fonts/NoirPro-Regular.ttf'),
+    'light': require('@/assets/fonts/NoirPro-Light.ttf'),
+    'Medium': require('@/assets/fonts/NoirPro-Medium.ttf'),
+    'bold': require('@/assets/fonts/NoirPro-Bold.ttf'),
+    'heavy': require('@/assets/fonts/NoirPro-Heavy.ttf'),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
 
   return (
-    <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+    <ThemeProvider value={NAV_THEME['light']}>
       <Stack />
       <PortalHost />
     </ThemeProvider>
