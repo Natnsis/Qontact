@@ -34,7 +34,7 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={NAV_THEME['light']}>
+    <ThemeProvider value={NAV_THEME['dark']}>
       <Stack screenOptions={{ headerShown: false }} />
       <PortalHost />
     </ThemeProvider>

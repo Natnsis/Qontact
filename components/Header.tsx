@@ -1,14 +1,17 @@
 import { View, Text } from 'react-native'
 import { Button } from './ui/button'
 import { colors } from '@/constants/color'
+import { useRouter } from 'expo-router'
 
 const Header = ({ face }: { face: string }) => {
+  const router = useRouter()
   const page = face;
 
   return (
     <View className='flex-row justify-between px-2'>
       <Button
         style={face === 'configure' ? { backgroundColor: colors.background } : {}}
+        onPress={() => router.replace('/configure')}
         className='rounded-full'
       >
         <Text
@@ -23,6 +26,7 @@ const Header = ({ face }: { face: string }) => {
 
       <Button
         style={face === 'share' ? { backgroundColor: colors.background } : {}}
+        onPress={() => router.replace('/')}
         className='rounded-full'
       >
         <Text
@@ -38,6 +42,7 @@ const Header = ({ face }: { face: string }) => {
       <Button
         style={face === 'profile' ? { backgroundColor: colors.background } : {}}
         className='rounded-full'
+        onPress={() => router.replace('/profile')}
       >
         <Text
           style={{

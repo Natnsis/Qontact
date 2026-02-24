@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import Header from '@/components/Header';
+import QRCode from 'react-native-qrcode-svg';
 
 const index = () => {
   const { height } = Dimensions.get('screen');
@@ -79,9 +80,13 @@ const index = () => {
             </View>
           ) : (
             <View
-              style={{ backgroundColor: colors.secondary }}
               className='flex-row items-center justify-center h-full w-full mx-4'>
-              <Text className='text-white'>qr code here</Text>
+              <QRCode
+                value="https://github.com/your-dev-profile"
+                size={200}
+                color="black"
+                backgroundColor="white"
+              />
             </View>
           )}
         </View>
