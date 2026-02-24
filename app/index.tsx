@@ -9,6 +9,8 @@ import Header from '@/components/Header';
 const index = () => {
   const { height } = Dimensions.get('screen');
   const [hidden, setHidden] = useState(true);
+  const [history, setHistory] = useState(true);
+  const [platform, setPlatform] = useState('phone');
 
   const contacts = [
     { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
@@ -96,15 +98,12 @@ const index = () => {
     <SafeAreaView
       style={{
         backgroundColor: colors.dark,
-        flex: 1, // BUG FIX: Use flex: 1 instead of fixed height for better layout stability
+        flex: 1,
       }}
     >
-      <Header face='configure' />
+      <Header face='share' />
 
       <View className='px-4 flex-1'>
-        {/* BUG FIX: Removed <ScrollView>. 
-          The FlatList now handles all scrolling for the page.
-        */}
         <FlatList
           data={contacts}
           keyExtractor={(item) => item.id}
@@ -127,7 +126,6 @@ const index = () => {
               </View>
             </View>
           )}
-          // Adds some space at the very bottom of the list
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       </View>
