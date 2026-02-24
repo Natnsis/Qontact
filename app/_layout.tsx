@@ -35,7 +35,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={NAV_THEME['light']}>
-      <Stack />
+      <Stack screenOptions={{ headerShown: false }} />
       <PortalHost />
     </ThemeProvider>
   );
