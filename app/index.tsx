@@ -1,11 +1,9 @@
-import { Button } from '@/components/ui/button';
 import { colors } from '@/constants/color';
-import { View, Text, Dimensions, Pressable, ScrollView } from 'react-native'; // Replaced FlatList with ScrollView
+import { View, Text, Dimensions, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import Header from '@/components/Header';
-import QRcode from '@/components/QRcode';
 import TelegramQR from '@/components/TelegramQR';
 import PhoneQr from '@/components/PhoneQr';
 import TwitterQR from '@/components/TwitterQR';

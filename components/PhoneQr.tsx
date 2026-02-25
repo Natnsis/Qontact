@@ -10,6 +10,7 @@ const PhoneQr = () => {
   const [hidden, setHidden] = useState(true);
 
   const contacts = [
+    { id: '0', name: 'All Contacts', time: '30-01-24', phone: '#*********#' },
     { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
     { id: '2', name: 'Sara Belay', time: '02-02-24', phone: '+251911556677' },
     { id: '3', name: 'Dawit Isaac', time: '15-02-24', phone: '+251920889900' },
@@ -24,7 +25,7 @@ const PhoneQr = () => {
         className='rounded-lg p-2 mt-3'
         style={{ height: height * 0.4, backgroundColor: colors.background }}>
         <View className='flex-row justify-between'>
-          <Text style={{ color: colors.light, fontFamily: 'bold', fontSize: 16 }}>Qrcode</Text>
+          <Text style={{ color: colors.light, fontFamily: 'bold', fontSize: 16 }}>Phone Qrcode</Text>
           <Button size='icon' onPress={() => setHidden(!hidden)} variant='ghost'>
             <Feather name={hidden ? 'cast' : 'maximize'} color={colors.secondary} size={24} />
           </Button>
@@ -51,30 +52,46 @@ const PhoneQr = () => {
       </View>
 
       <View className='mt-5 mb-2'>
-        <Text style={{ fontFamily: 'heavy', color: colors.light }}>Recent contacts</Text>
+        <Text style={{ fontFamily: 'heavy', color: colors.light }}>Select Numbers</Text>
       </View>
 
-      {contacts.map((item) => (
-        <View
-          key={item.id}
-          style={{ backgroundColor: colors.background }}
-          className='p-3 rounded-lg mb-3'
-        >
-          <View className='flex-row justify-between'>
-            <Text style={{ fontFamily: 'regular', color: colors.light }}>{item.name}</Text>
-            <Feather name='phone' color={colors.secondary} size={23} />
-          </View>
-          <View className='flex-row items-center justify-between mt-1'>
-            <Text style={{ fontFamily: 'light', color: colors.primary }}>{item.phone}</Text>
-            <View className='flex-row items-center justify-end'>
-              <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 12 }}>{item.time}</Text>
-              <Button size='icon' variant='ghost'>
-                <Feather name='corner-down-right' color={colors.secondary} size={18} />
-              </Button>
+      <View className="flex-row flex-wrap justify-between">
+        {contacts.map((item) => (
+          <View
+            key={item.id}
+            style={{
+              backgroundColor: colors.background,
+              width: '48%',
+            }}
+            className='p-3 rounded-lg mb-3'
+          >
+            <View className='flex-row justify-between'>
+              <Text
+                numberOfLines={1}
+                style={{ fontFamily: 'regular', color: colors.light, flex: 1 }}
+              >
+                {item.name}
+              </Text>
+              <Feather name='phone' color={colors.secondary} size={18} />
+            </View>
+
+            <View className='mt-2'>
+              <Text style={{ fontFamily: 'light', color: colors.primary, fontSize: 12 }}>
+                {item.phone}
+              </Text>
+
+              <View className='flex-row items-center justify-between mt-2'>
+                <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 10 }}>
+                  {item.time}
+                </Text>
+                <Button size='sm' variant='ghost' className="h-6 w-6">
+                  <Feather name='corner-down-right' color={colors.secondary} size={14} />
+                </Button>
+              </View>
             </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </View>
   )
 }
