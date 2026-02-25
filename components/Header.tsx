@@ -5,7 +5,6 @@ import { useRouter } from 'expo-router'
 
 const Header = ({ face }: { face: string }) => {
   const router = useRouter()
-  const page = face;
 
   return (
     <View className='flex-row justify-between px-2'>
@@ -28,7 +27,7 @@ const Header = ({ face }: { face: string }) => {
       <Button
         style={face === 'share' ? { backgroundColor: colors.background } : {}}
         variant={face === 'share' ? 'default' : 'ghost'}
-        onPress={() => router.replace('/')}
+        onPress={() => router.replace('/share')}
         className='rounded-full'
       >
         <Text
@@ -53,7 +52,7 @@ const Header = ({ face }: { face: string }) => {
             color: colors.primary
           }}
         >
-          Profile data
+          Inner Hub
         </Text>
       </Button>
     </View>
