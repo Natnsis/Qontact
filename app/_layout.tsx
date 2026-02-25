@@ -7,6 +7,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import { View } from 'react-native';
 
 export {
   ErrorBoundary,
@@ -30,13 +31,15 @@ export default function RootLayout() {
   }, [loaded, error]);
 
   if (!loaded && !error) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#000000' }} />;
   }
 
   return (
-    <ThemeProvider value={NAV_THEME['light']}>
-      <Stack screenOptions={{ headerShown: false }} />
-      <PortalHost />
-    </ThemeProvider>
+    <View style={{ flex: 1, backgroundColor: '#000000' }}>
+      <ThemeProvider value={NAV_THEME['dark']}>
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#000000' } }} />
+        <PortalHost />
+      </ThemeProvider>
+    </View>
   );
 }
