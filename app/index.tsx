@@ -1,138 +1,18 @@
 import { Button } from '@/components/ui/button';
 import { colors } from '@/constants/color';
-import { View, Text, Dimensions, FlatList, Pressable } from 'react-native';
+import { View, Text, Dimensions, Pressable, ScrollView } from 'react-native'; // Replaced FlatList with ScrollView
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import Header from '@/components/Header';
 import QRcode from '@/components/QRcode';
 import TelegramQR from '@/components/TelegramQR';
+import PhoneQr from '@/components/PhoneQr';
+import TwitterQR from '@/components/TwitterQR';
 
 const index = () => {
   const { height } = Dimensions.get('screen');
-  const [hidden, setHidden] = useState(true);
   const [platform, setPlatform] = useState('phone');
-
-  const contacts = [
-    { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
-    { id: '2', name: 'Sara Belay', time: '02-02-24', phone: '+251911556677' },
-    { id: '3', name: 'Dawit Isaac', time: '15-02-24', phone: '+251920889900' },
-    { id: '4', name: 'Elias Tekle', time: '20-02-24', phone: '+251944112233' },
-    { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
-    { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
-  ];
-
-  console.log(platform);
-  const renderHeader = () => (
-    <View>
-      <View
-        style={{ backgroundColor: colors.background, height: height * 0.15 }}
-        className='mt-3 rounded-lg p-2'
-      >
-        <Text style={{ fontFamily: 'regular', color: colors.light }}>Platform</Text>
-        <View className='flex-row justify-between mt-2 px-2'>
-          {/*p1*/}
-          <Pressable
-            onPress={() => setPlatform('phone')}
-          >
-            <View>
-              <View className='flex-row justify-center'>
-                <Feather
-                  name='phone'
-                  color={platform === 'phone' ? colors.primary : colors.light}
-                  size={40} />
-              </View>
-              <Text
-                style={{ color: colors.light, fontFamily: 'regular' }}
-                className='text-center'>
-                Phone
-              </Text>
-            </View>
-          </Pressable>
-
-          {/*p2*/}
-          <Pressable
-            onPress={() => setPlatform('telegram')}
-          >
-            <View>
-              <View className='flex-row justify-center'>
-                <Feather
-                  name='send'
-                  color={platform === 'telegram' ? colors.primary : colors.light}
-                  size={40} />
-              </View>
-              <Text
-                style={{ color: colors.light, fontFamily: 'regular' }}
-                className='text-center'>
-                Telegram
-              </Text>
-            </View>
-          </Pressable>
-
-          {/*p3*/}
-          <Pressable
-            onPress={() => setPlatform('twitter')}
-          >
-            <View>
-              <View className='flex-row justify-center'>
-                <Feather
-                  name='twitter'
-                  color={platform === 'twitter' ? colors.primary : colors.light}
-                  size={40} />
-              </View>
-              <Text style={{ color: colors.light, fontFamily: 'regular' }} className='text-center'>Twitter</Text>
-            </View>
-          </Pressable>
-        </View>
-      </View>
-
-      <View>
-        {(() => {
-          switch (platform) {
-            case 'phone': return <QRcode />;
-            case 'telegram': return <TelegramQR />;
-            case 'twitter': return <QRcode />;
-            default: return <QRcode />;
-          }
-        })()}
-      </View>
-
-      <View
-        className='rounded-lg p-2 mt-3'
-        style={{ height: height * 0.4, backgroundColor: colors.background }}>
-        <View className='flex-row justify-between'>
-          <Text style={{ color: colors.light, fontFamily: 'bold', fontSize: 16 }}>Qrcode</Text>
-          <Button size='icon' onPress={() => setHidden(!hidden)} variant='ghost'>
-            <Feather name={hidden ? 'cast' : 'maximize'} color={colors.secondary} size={24} />
-          </Button>
-        </View>
-
-        <View className='flex-row p-2 justify-center items-center flex-1'>
-          {hidden ? (
-            <View
-              style={{ backgroundColor: colors.primary }}
-              className='h-[80%] w-[80%] rounded-full flex-row items-center justify-center'
-            >
-              <View className='flex-col items-center justify-center'>
-                <Text style={{ fontFamily: 'bold' }}>Contact Info:</Text>
-                <Text style={{ fontFamily: 'regular' }}>+2519********</Text>
-                <Text style={{ fontFamily: 'light', fontSize: 12 }} className='px-5 text-center'>
-                  If you haven't configured, do before sharing
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <QRcode />
-          )}
-        </View>
-      </View>
-
-      <View className='mt-5 mb-2'>
-        <Text style={{ fontFamily: 'heavy', color: colors.light }}>Recent contacts</Text>
-      </View>
-    </View>
-  );
-
   return (
     <SafeAreaView
       style={{
@@ -142,32 +22,62 @@ const index = () => {
     >
       <Header face='share' />
 
-      <View className='px-4 flex-1'>
-        <FlatList
-          data={contacts}
-          keyExtractor={(item) => item.id}
-          ListHeaderComponent={renderHeader} // Renders the top UI
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={{ backgroundColor: colors.background }} className='p-3 rounded-lg mb-3'>
-              <View className='flex-row justify-between'>
-                <Text style={{ fontFamily: 'regular', color: colors.light }}>{item.name}</Text>
-                <Feather name='phone' color={colors.secondary} size={23} />
-              </View>
-              <View className='flex-row items-center justify-between mt-1'>
-                <Text style={{ fontFamily: 'light', color: colors.primary }}>{item.phone}</Text>
-                <View className='flex-row items-center justify-end'>
-                  <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 12 }}>{item.time}</Text>
-                  <Button size='icon' variant='ghost'>
-                    <Feather name='corner-down-right' color={colors.secondary} size={18} />
-                  </Button>
+      <ScrollView
+        className='px-4 flex-1'
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <View
+          style={{ backgroundColor: colors.background, height: height * 0.15 }}
+          className='mt-3 rounded-lg p-2'
+        >
+          <Text style={{ fontFamily: 'regular', color: colors.light }}>Platform</Text>
+          <View className='flex-row justify-between mt-2 px-2'>
+            <Pressable onPress={() => setPlatform('phone')}>
+              <View>
+                <View className='flex-row justify-center'>
+                  <Feather
+                    name='phone'
+                    color={platform === 'phone' ? colors.primary : colors.light}
+                    size={40} />
                 </View>
+                <Text style={{ color: colors.light, fontFamily: 'regular' }} className='text-center'>Phone</Text>
               </View>
-            </View>
-          )}
-          contentContainerStyle={{ paddingBottom: 20 }}
-        />
-      </View>
+            </Pressable>
+
+            <Pressable onPress={() => setPlatform('telegram')}>
+              <View>
+                <View className='flex-row justify-center'>
+                  <Feather
+                    name='send'
+                    color={platform === 'telegram' ? colors.primary : colors.light}
+                    size={40} />
+                </View>
+                <Text style={{ color: colors.light, fontFamily: 'regular' }} className='text-center'>Telegram</Text>
+              </View>
+            </Pressable>
+
+            <Pressable onPress={() => setPlatform('twitter')}>
+              <View>
+                <View className='flex-row justify-center'>
+                  <Feather
+                    name='twitter'
+                    color={platform === 'twitter' ? colors.primary : colors.light}
+                    size={40} />
+                </View>
+                <Text style={{ color: colors.light, fontFamily: 'regular' }} className='text-center'>Twitter</Text>
+              </View>
+            </Pressable>
+          </View>
+        </View>
+        {
+          {
+            'phone': <PhoneQr />,
+            'telegram': <TelegramQR />,
+            'twitter': <TwitterQR />
+          }[platform]
+        }
+      </ScrollView>
     </SafeAreaView>
   );
 };
