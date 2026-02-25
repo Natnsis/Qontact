@@ -1,7 +1,7 @@
-
 import Header from "@/components/Header"
+import ProfileOptions from "@/components/ProfileOptions"
 import { colors } from "@/constants/color"
-import { Dimensions, View } from "react-native"
+import { Dimensions } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 const index = () => {
@@ -12,6 +12,7 @@ const index = () => {
       height: height
     }}>
       <Header face="profile" />
+      <ProfileOptions />
     </SafeAreaView>
   )
 }

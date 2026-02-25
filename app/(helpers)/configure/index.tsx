@@ -1,7 +1,9 @@
+import ConfigureOption from "@/components/ConfigureOption"
 import Header from "@/components/Header"
 import { colors } from "@/constants/color"
-import { Dimensions, View } from "react-native"
+import { Dimensions } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { Feather } from '@expo/vector-icons';
 
 const index = () => {
   const { height } = Dimensions.get('screen');
@@ -11,6 +13,7 @@ const index = () => {
       height: height
     }}>
       <Header face="configure" />
+      <ConfigureOption />
     </SafeAreaView>
   )
 }

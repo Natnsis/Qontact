@@ -2,7 +2,6 @@ import { View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 const TQRcode = () => {
-
   const telegram_url = "https://t.me/Flawless_22_4"
 
   return (
