@@ -1,5 +1,5 @@
 import Header from "@/components/Header"
-import ProfileOptions from "@/components/HubOptions"
+import HubOptions from "@/components/HubOptions"
 import { colors } from "@/constants/color"
 import { Dimensions } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -11,8 +11,8 @@ const index = () => {
       backgroundColor: colors.dark,
       height: height
     }}>
-      <Header face="profile" />
-      <ProfileOptions />
+      <Header face="hub" />
+      <HubOptions />
     </SafeAreaView>
   )
 }

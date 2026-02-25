@@ -41,10 +41,10 @@ const Header = ({ face }: { face: string }) => {
       </Button>
 
       <Button
-        style={face === 'profile' ? { backgroundColor: colors.background } : {}}
-        variant={face === 'profile' ? 'default' : 'ghost'}
+        style={face === 'hub' ? { backgroundColor: colors.background } : {}}
+        variant={face === 'hub' ? 'default' : 'ghost'}
         className='rounded-full'
-        onPress={() => router.replace('/profile')}
+        onPress={() => router.replace('/hub')}
       >
         <Text
           style={{
