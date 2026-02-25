@@ -11,6 +11,7 @@ const Header = ({ face }: { face: string }) => {
     <View className='flex-row justify-between px-2'>
       <Button
         style={face === 'configure' ? { backgroundColor: colors.background } : {}}
+        variant={face === 'configure' ? 'default' : 'ghost'}
         onPress={() => router.replace('/configure')}
         className='rounded-full'
       >
@@ -26,6 +27,7 @@ const Header = ({ face }: { face: string }) => {
 
       <Button
         style={face === 'share' ? { backgroundColor: colors.background } : {}}
+        variant={face === 'share' ? 'default' : 'ghost'}
         onPress={() => router.replace('/')}
         className='rounded-full'
       >
@@ -41,6 +43,7 @@ const Header = ({ face }: { face: string }) => {
 
       <Button
         style={face === 'profile' ? { backgroundColor: colors.background } : {}}
+        variant={face === 'profile' ? 'default' : 'ghost'}
         className='rounded-full'
         onPress={() => router.replace('/profile')}
       >

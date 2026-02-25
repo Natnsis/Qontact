@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { colors } from '@/constants/color';
-import { View, Text, Dimensions, FlatList } from 'react-native';
+import { View, Text, Dimensions, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import QRcode from '@/components/QRcode';
 const index = () => {
   const { height } = Dimensions.get('screen');
   const [hidden, setHidden] = useState(true);
+  const [platform, setPlatform] = useState('phone');
 
   const contacts = [
     { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
@@ -19,46 +20,78 @@ const index = () => {
     { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
     { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
   ];
+
+  console.log(platform);
   const renderHeader = () => (
     <View>
-      {/* Platform Section */}
       <View
         style={{ backgroundColor: colors.background, height: height * 0.15 }}
         className='mt-3 rounded-lg p-2'
       >
         <Text style={{ fontFamily: 'regular', color: colors.light }}>Platform</Text>
         <View className='flex-row justify-between mt-2 px-2'>
-          <View>
-            <View className='flex-row justify-center'>
-              <Feather name='phone' color={colors.primary} size={40} />
+          {/*p1*/}
+          <Pressable
+            onPress={() => setPlatform('phone')}
+          >
+            <View>
+              <View className='flex-row justify-center'>
+                <Feather
+                  name='phone'
+                  color={platform === 'phone' ? colors.primary : colors.light}
+                  size={40} />
+              </View>
+              <Text
+                style={{ color: colors.light, fontFamily: 'regular' }}
+                className='text-center'>
+                Phone
+              </Text>
             </View>
-            <Text style={{ color: colors.light, fontFamily: 'regular' }} className='text-center'>Phone</Text>
-          </View>
+          </Pressable>
 
-          <View>
-            <View className='flex-row justify-center'>
-              <Feather name='send' color={colors.light} size={40} />
+          {/*p2*/}
+          <Pressable
+            onPress={() => setPlatform('telegram')}
+          >
+            <View>
+              <View className='flex-row justify-center'>
+                <Feather
+                  name='send'
+                  color={platform === 'telegram' ? colors.primary : colors.light}
+                  size={40} />
+              </View>
+              <Text
+                style={{ color: colors.light, fontFamily: 'regular' }}
+                className='text-center'>
+                Telegram
+              </Text>
             </View>
-            <Text style={{ color: colors.light, fontFamily: 'regular' }} className='text-center'>Telegram</Text>
-          </View>
+          </Pressable>
 
-          <View>
-            <View className='flex-row justify-center'>
-              <Feather name='twitter' color={colors.light} size={40} />
+          {/*p3*/}
+          <Pressable
+            onPress={() => setPlatform('twitter')}
+          >
+            <View>
+              <View className='flex-row justify-center'>
+                <Feather
+                  name='twitter'
+                  color={platform === 'twitter' ? colors.primary : colors.light}
+                  size={40} />
+              </View>
+              <Text style={{ color: colors.light, fontFamily: 'regular' }} className='text-center'>Twitter</Text>
             </View>
-            <Text style={{ color: colors.light, fontFamily: 'regular' }} className='text-center'>Twitter</Text>
-          </View>
+          </Pressable>
         </View>
       </View>
 
-      {/* QR Code Section */}
       <View
         className='rounded-lg p-2 mt-3'
         style={{ height: height * 0.4, backgroundColor: colors.background }}>
         <View className='flex-row justify-between'>
           <Text style={{ color: colors.light, fontFamily: 'bold', fontSize: 16 }}>Qrcode</Text>
-          <Button size='icon' onPress={() => setHidden(!hidden)}>
-            <Feather name={hidden ? 'cast' : 'maximize'} color={colors.secondary} size={20} />
+          <Button size='icon' onPress={() => setHidden(!hidden)} variant='ghost'>
+            <Feather name={hidden ? 'cast' : 'maximize'} color={colors.secondary} size={24} />
           </Button>
         </View>
 
@@ -82,7 +115,6 @@ const index = () => {
         </View>
       </View>
 
-      {/* Recent Contacts Label */}
       <View className='mt-5 mb-2'>
         <Text style={{ fontFamily: 'heavy', color: colors.light }}>Recent contacts</Text>
       </View>
