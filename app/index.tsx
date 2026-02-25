@@ -6,6 +6,7 @@ import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import Header from '@/components/Header';
 import QRcode from '@/components/QRcode';
+import TelegramQR from '@/components/TelegramQR';
 
 const index = () => {
   const { height } = Dimensions.get('screen');
@@ -83,6 +84,17 @@ const index = () => {
             </View>
           </Pressable>
         </View>
+      </View>
+
+      <View>
+        {(() => {
+          switch (platform) {
+            case 'phone': return <QRcode />;
+            case 'telegram': return <TelegramQR />;
+            case 'twitter': return <QRcode />;
+            default: return <QRcode />;
+          }
+        })()}
       </View>
 
       <View
