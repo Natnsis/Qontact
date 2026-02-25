@@ -11,7 +11,7 @@ const TelegramQR = () => {
 
   const contacts = [
     { id: '1', name: 'Commit Happens', time: '30-01-24', phone: 'https://t.me/bugpusher' },
-    { id: '2', name: 'Sara Belay', time: '02-02-24', phone: '+251911556677' },
+    { id: '2', name: 'Sara Belay', time: '02-02-24', phone: 'https://t.me/MineCrafters101' },
     { id: '3', name: 'Dawit Isaac', time: '15-02-24', phone: '+251920889900' },
     { id: '4', name: 'Elias Tekle', time: '20-02-24', phone: '+251944112233' },
     { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
@@ -24,7 +24,9 @@ const TelegramQR = () => {
         className='rounded-lg p-2 mt-3'
         style={{ height: height * 0.4, backgroundColor: colors.background }}>
         <View className='flex-row justify-between'>
-          <Text style={{ color: colors.light, fontFamily: 'bold', fontSize: 16 }}>Telegram QR</Text>
+          <Text style={{ color: colors.light, fontFamily: 'bold', fontSize: 16 }}>
+            Telegram QR
+          </Text>
           <Button size='icon' onPress={() => setHidden(!hidden)} variant='ghost'>
             <Feather name={hidden ? 'cast' : 'maximize'} color={colors.secondary} size={24} />
           </Button>
