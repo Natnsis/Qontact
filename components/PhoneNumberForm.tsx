@@ -7,6 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
+import { toast } from "sonner-native";
 
 const PhoneNumberForm = () => {
   const contacts = [
@@ -29,6 +30,7 @@ const PhoneNumberForm = () => {
 
   const onSubmit = async (data: PhoneType) => {
     console.log("Submit Data:", data);
+    toast.success('number has been saved')
   };
 
   return (

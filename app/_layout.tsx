@@ -10,6 +10,8 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { loadCheck } from '@/controllers/onboarding.controller';
+import { Toaster } from 'sonner-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
   ErrorBoundary,
@@ -65,11 +67,14 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#000000' }}>
-      <ThemeProvider value={NAV_THEME['dark']}>
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#000000' } }} />
-        <PortalHost />
-      </ThemeProvider>
-    </View>
+    <GestureHandlerRootView>
+      <View style={{ flex: 1, backgroundColor: '#000000' }}>
+        <ThemeProvider value={NAV_THEME['dark']}>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#000000' } }} />
+          <PortalHost />
+          <Toaster />
+        </ThemeProvider>
+      </View>
+    </GestureHandlerRootView>
   );
 }
