@@ -8,46 +8,48 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
 import { toast } from "sonner-native";
-import { addNumber, getNumbers } from "@/controllers/saveNumber.controller";
-import { useQuery } from "@tanstack/react-query";
+import { addNumber, getNumbers, wipeContacts } from "@/controllers/saveNumber.controller";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const PhoneNumberForm = () => {
-
-  const { data: contactNumbers, isLoading } = useQuery({
+  const { data: contactNumbers } = useQuery({
     queryKey: ['contacts'],
     queryFn: getNumbers,
   });
 
-  console.log(contactNumbers);
+  const queryClient = useQueryClient();
 
-  const contacts = [
-    { id: '0', name: 'All Contacts', time: '30-01-24', phone: '#*********#' },
-    { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
-    { id: '2', name: 'Sara Belay', time: '02-02-24', phone: '+251911556677' },
-    { id: '3', name: 'Dawit Isaac', time: '15-02-24', phone: '+251920889900' },
-    { id: '4', name: 'Elias Tekle', time: '20-02-24', phone: '+251944112233' },
-    { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
-    { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
-  ];
+  const getFormattedDate = () => {
+    const now = new Date();
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }).format(now);
+  };
 
   const { handleSubmit, formState: { errors, isSubmitting }, control } = useForm<PhoneType>({
     resolver: zodResolver(PhoneSchema),
     defaultValues: {
       number: '',
-      name: ''
+      name: '',
+      createdAt: getFormattedDate().toString()
     }
   });
-
 
   const onSubmit = async (data: PhoneType) => {
     try {
       await addNumber(data);
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
     } catch (error) {
       toast.error('error while adding number')
     }
   };
 
-  console.log(contactNumbers);
   return (
     <View>
       <Text
@@ -124,17 +126,35 @@ const PhoneNumberForm = () => {
       </View>
 
       <View>
-        <Text
-          style={{
-            color: colors.primary,
-            fontFamily: 'regular',
-            fontSize: 16
-          }}>
-          Saved Numbers
-        </Text>
+        <View className="flex-row items-center justify-between">
+          <Text
+            style={{
+              color: colors.primary,
+              fontFamily: 'regular',
+              fontSize: 16
+            }}>
+            Saved Numbers
+          </Text>
+          <Button
+            variant='ghost'
+            onPress={() => {
+              wipeContacts()
+              queryClient.invalidateQueries({ queryKey: ['contacts'] });
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: 'regular',
+                color: colors.light
+              }}
+            >
+              Remove All
+            </Text>
+          </Button>
+        </View>
         {contactNumbers ?
           <View>
-            {contacts.map((c, index) => (
+            {contactNumbers.map((c, index) => (
               <View key={index} className="mb-2">
                 <View className="flex-row items-center gap-2">
                   <Feather
@@ -142,23 +162,25 @@ const PhoneNumberForm = () => {
                     color={colors.dark}
                     style={{ backgroundColor: colors.secondary }}
                     className="p-2 rounded-full" />
-                  <Text
-                    style={{ color: colors.light, fontFamily: 'regular' }}>
-                    {c.name}
-                  </Text>
+                  <View>
+                    <Text
+                      style={{ color: colors.light, fontFamily: 'regular' }}>
+                      {c.name}
+                    </Text>
+                    <Text
+                      style={{ color: colors.light, fontFamily: 'regular' }}>
+                      {c.number}
+                    </Text>
+                  </View>
                 </View>
                 <View className="flex-row gap-2 items-center justify-between">
                   <View>
                     <Text
                       style={{ color: colors.light, fontFamily: 'light' }}>
-                      {c.time}
+                      {c.createdAt}
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">
-                    <Text
-                      style={{ color: colors.light, fontFamily: 'regular' }}>
-                      {c.phone}
-                    </Text>
                     <Button
                       size='icon'
                       variant='destructive'

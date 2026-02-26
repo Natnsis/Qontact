@@ -31,10 +31,31 @@ export const getNumbers = async () => {
   }
 }
 
-export const deleteNumber = async () => {
+export const deleteNumberByTimestamp = async (timestamp: string) => {
   try {
+    const existingData = await AsyncStorage.getItem(PHONE_NUMER_KEY);
+    if (!existingData) return;
 
+    const currentNumbers: PhoneType[] = JSON.parse(existingData);
+    const updatedNumbers = currentNumbers.filter(
+      (item) => item.createdAt !== timestamp
+    );
+
+    await AsyncStorage.setItem(PHONE_NUMER_KEY, JSON.stringify(updatedNumbers));
+
+    toast.success('Contact deleted');
+    return updatedNumbers;
   } catch (error) {
-    console.log(error);
+    console.error("Error deleting record:", error);
+    toast.error('Failed to delete');
+  }
+};
+
+export const wipeContacts = async () => {
+  try {
+    await AsyncStorage.removeItem(PHONE_NUMER_KEY);
+    toast.success('all contacts cleared');
+  } catch (error) {
+    console.log('error clearing data')
   }
 }

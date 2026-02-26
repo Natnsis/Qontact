@@ -6,7 +6,8 @@ export const PhoneSchema = z.object({
     .max(18, 'name too big'),
   number: z.string('invalid number')
     .min(10, 'must be atleast 10 chars')
-    .max(15, 'number too big')
+    .max(15, 'number too big'),
+  createdAt: z.string()
 });
 
 export type PhoneType = z.infer<typeof PhoneSchema>;
