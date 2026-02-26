@@ -32,7 +32,7 @@ const PhoneNumberForm = () => {
     }).format(now);
   };
 
-  const { handleSubmit, formState: { errors, isSubmitting }, control } = useForm<PhoneType>({
+  const { handleSubmit, reset, formState: { errors, isSubmitting }, control } = useForm<PhoneType>({
     resolver: zodResolver(PhoneSchema),
     defaultValues: {
       number: '',
@@ -43,10 +43,17 @@ const PhoneNumberForm = () => {
 
   const onSubmit = async (data: PhoneType) => {
     try {
-      await addNumber(data);
+      const now = getFormattedDate();
+      const payload = {
+        ...data,
+        createdAt: now,
+        id: Date.now().toString()
+      };
+      await addNumber(payload);
+      reset();
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
     } catch (error) {
-      toast.error('error while adding number')
+      console.error(error);
     }
   };
 
