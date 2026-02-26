@@ -1,7 +1,7 @@
 import { colors } from '@/constants/color';
 import { FlatList, View, Dimensions, Text, Image } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { addCheck, loadCheck } from '@/controllers/onboarding.controller';
