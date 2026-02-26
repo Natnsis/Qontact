@@ -9,23 +9,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
 import { toast } from "sonner-native";
 import { addNumber, getNumbers } from "@/controllers/saveNumber.controller";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const PhoneNumberForm = () => {
-  const [contactNumbers, setContactNumbers] = useState([]);
 
-  useEffect(() => {
-    getData();
-  }, []);
+  const { data: contactNumbers, isLoading } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: getNumbers,
+  });
 
-  const getData = async () => {
-    try {
-      const data = await getNumbers();
-      setContactNumbers(data);
-    } catch (e) {
-      console.log("Failed to load contacts", e);
-    }
-  };
+  console.log(contactNumbers);
 
   const contacts = [
     { id: '0', name: 'All Contacts', time: '30-01-24', phone: '#*********#' },
@@ -139,44 +132,51 @@ const PhoneNumberForm = () => {
           }}>
           Saved Numbers
         </Text>
-
-        <View>
-          {contactNumbers.map((c, index) => (
-            <View key={index} className="mb-2">
-              <View className="flex-row items-center gap-2">
-                <Feather
-                  name='phone'
-                  color={colors.dark}
-                  style={{ backgroundColor: colors.secondary }}
-                  className="p-2 rounded-full" />
-                <Text
-                  style={{ color: colors.light, fontFamily: 'regular' }}>
-                  {c.name}
-                </Text>
-              </View>
-              <View className="flex-row gap-2 items-center justify-between">
-                <View>
-                  <Text
-                    style={{ color: colors.light, fontFamily: 'light' }}>
-                    {c.time}
-                  </Text>
-                </View>
+        {contactNumbers ?
+          <View>
+            {contacts.map((c, index) => (
+              <View key={index} className="mb-2">
                 <View className="flex-row items-center gap-2">
+                  <Feather
+                    name='phone'
+                    color={colors.dark}
+                    style={{ backgroundColor: colors.secondary }}
+                    className="p-2 rounded-full" />
                   <Text
                     style={{ color: colors.light, fontFamily: 'regular' }}>
-                    {c.number}
+                    {c.name}
                   </Text>
-                  <Button
-                    size='icon'
-                    variant='destructive'
-                  >
-                    <Feather name="trash" />
-                  </Button>
+                </View>
+                <View className="flex-row gap-2 items-center justify-between">
+                  <View>
+                    <Text
+                      style={{ color: colors.light, fontFamily: 'light' }}>
+                      {c.time}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center gap-2">
+                    <Text
+                      style={{ color: colors.light, fontFamily: 'regular' }}>
+                      {c.phone}
+                    </Text>
+                    <Button
+                      size='icon'
+                      variant='destructive'
+                    >
+                      <Feather name="trash" />
+                    </Button>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+          :
+          <Text
+            style={{ fontFamily: 'light', color: colors.primary }}
+            className="text-center mt-2">
+            no numbers found.
+          </Text>
+        }
       </View>
     </View >
   )
