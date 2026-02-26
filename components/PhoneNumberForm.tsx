@@ -7,9 +7,9 @@ import { Feather } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
-import { toast } from "sonner-native";
-import { addNumber, getNumbers, wipeContacts } from "@/controllers/saveNumber.controller";
+import { addNumber, deleteNumberById, getNumbers, wipeContacts } from "@/controllers/saveNumber.controller";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner-native";
 
 const PhoneNumberForm = () => {
   const { data: contactNumbers } = useQuery({
@@ -37,7 +37,6 @@ const PhoneNumberForm = () => {
     defaultValues: {
       number: '',
       name: '',
-      createdAt: getFormattedDate().toString()
     }
   });
 
@@ -53,6 +52,8 @@ const PhoneNumberForm = () => {
       reset();
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
     } catch (error) {
+      toast.error('error occured');
+
       console.error(error);
     }
   };
@@ -91,7 +92,10 @@ const PhoneNumberForm = () => {
                 className="border-[#96dded]" />
             )}
           />
-          {errors.name && <Text style={{ color: colors.primary, fontFamily: 'light' }}>{errors.name.message}</Text>}
+          {errors.name &&
+            <Text style={{ color: colors.primary, fontFamily: 'light' }}>
+              {errors.name.message}
+            </Text>}
         </View>
 
         <View className="mb-5">
@@ -117,7 +121,10 @@ const PhoneNumberForm = () => {
                 className="border-[#96dded]" />
             )}
           />
-          {errors.number && <Text style={{ color: colors.primary, fontFamily: 'light' }}>{errors.number.message}</Text>}
+          {errors.number &&
+            <Text style={{ color: colors.primary, fontFamily: 'light' }}>
+              {errors.number.message}
+            </Text>}
         </View>
 
         <View className="flex-row justify-end">
@@ -191,6 +198,11 @@ const PhoneNumberForm = () => {
                     <Button
                       size='icon'
                       variant='destructive'
+                      onPress={async () => {
+                        await deleteNumberById(c.id)
+                        queryClient.invalidateQueries({ queryKey: ['contacts'] });
+                      }
+                      }
                     >
                       <Feather name="trash" />
                     </Button>

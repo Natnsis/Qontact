@@ -31,14 +31,14 @@ export const getNumbers = async () => {
   }
 }
 
-export const deleteNumberByTimestamp = async (timestamp: string) => {
+export const deleteNumberById = async (id: string) => {
   try {
     const existingData = await AsyncStorage.getItem(PHONE_NUMER_KEY);
     if (!existingData) return;
 
     const currentNumbers: PhoneType[] = JSON.parse(existingData);
     const updatedNumbers = currentNumbers.filter(
-      (item) => item.createdAt !== timestamp
+      (item) => item.id !== id
     );
 
     await AsyncStorage.setItem(PHONE_NUMER_KEY, JSON.stringify(updatedNumbers));
