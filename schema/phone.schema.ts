@@ -1,8 +1,12 @@
 import { z } from 'zod';
 
 export const PhoneSchema = z.object({
-  name: z.string().min(5).max(10),
-  number: z.number().min(10).max(15)
+  name: z.string('invalid name')
+    .min(3, 'name too small')
+    .max(10, 'name too big'),
+  number: z.string('invalid number')
+    .min(10, 'must be atleast 10 chars')
+    .max(20, 'number too big')
 });
 
 export type PhoneType = z.infer<typeof PhoneSchema>;

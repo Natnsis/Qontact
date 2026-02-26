@@ -1,9 +1,12 @@
-import { colors } from "@/constants/color"
-import { View, Text } from "react-native"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "./ui/button"
+import { colors } from "@/constants/color";
+import { View, Text } from "react-native";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "./ui/button";
 import { Feather } from '@expo/vector-icons';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
 
 const PhoneNumberForm = () => {
   const contacts = [
@@ -15,6 +18,19 @@ const PhoneNumberForm = () => {
     { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
     { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
   ];
+
+  const { register, handleSubmit, formState: { errors, isSubmitting }, control } = useForm<PhoneType>({
+    resolver: zodResolver(PhoneSchema),
+    defaultValues: {
+      number: '',
+      name: ''
+    }
+  });
+
+  const onSubmit = async (data: PhoneType) => {
+    console.log("Submit Data:", data);
+  };
+
   return (
     <View>
       <Text
@@ -23,34 +39,66 @@ const PhoneNumberForm = () => {
           fontFamily: 'regular',
           fontSize: 20
         }}
-      >Phone number infos</Text>
+      >
+        Phone number infos
+      </Text>
 
       <View className="mt-2 mx-2 p-2">
-        <Label
-          style={{
-            color: colors.light,
-            fontFamily: 'light',
-            fontSize: 12
-          }}
-        >Full Name / Nick Name</Label>
-        <Input style={{ fontFamily: 'light' }} className="border-[#96dded] mb-5" />
+        <View className="mb-5">
+          <Label
+            style={{
+              color: colors.light,
+              fontFamily: 'light',
+              fontSize: 12
+            }}
+          >
+            Full Name / Nick Name
+          </Label>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                onChangeText={onChange}
+                value={value}
+                style={{ fontFamily: 'light' }}
+                className="border-[#96dded]" />
+            )}
+          />
+          {errors.name && <Text style={{ color: colors.primary, fontFamily: 'light' }}>{errors.name.message}</Text>}
+        </View>
 
-        <Label
-          style={{
-            color: colors.light,
-            fontFamily: 'light',
-            fontSize: 12
-          }}
-        >
-          Phone Number
-        </Label>
-        <Input
-          style={{ fontFamily: 'light' }}
-          className="border-[#96dded] mb-5"
-          keyboardType="numeric" />
+        <View className="mb-5">
+          <Label
+            style={{
+              color: colors.light,
+              fontFamily: 'light',
+              fontSize: 12
+            }}
+          >
+            Phone Number
+          </Label>
+
+          <Controller
+            control={control}
+            name="number"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                onChangeText={onChange}
+                value={value}
+                keyboardType="numeric"
+                style={{ fontFamily: 'light' }}
+                className="border-[#96dded]" />
+            )}
+          />
+          {errors.number && <Text style={{ color: colors.primary, fontFamily: 'light' }}>{errors.number.message}</Text>}
+        </View>
 
         <View className="flex-row justify-end">
-          <Button style={{ backgroundColor: colors.secondary }}>
+          <Button
+            onPress={handleSubmit(onSubmit)}
+            disabled={isSubmitting}
+            style={{ backgroundColor: colors.secondary }}>
             <Text style={{ color: colors.dark, fontFamily: 'regular' }}>
               Save
             </Text>
@@ -94,7 +142,10 @@ const PhoneNumberForm = () => {
                     style={{ color: colors.light, fontFamily: 'regular' }}>
                     {c.phone}
                   </Text>
-                  <Button size='icon' variant='destructive'>
+                  <Button
+                    size='icon'
+                    variant='destructive'
+                  >
                     <Feather name="trash" />
                   </Button>
                 </View>
@@ -103,7 +154,7 @@ const PhoneNumberForm = () => {
           ))}
         </View>
       </View>
-    </View>
+    </View >
   )
 }
 
