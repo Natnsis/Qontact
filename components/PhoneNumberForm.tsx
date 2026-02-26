@@ -8,8 +8,25 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
 import { toast } from "sonner-native";
+import { addNumber, getNumbers } from "@/controllers/saveNumber.controller";
+import { useEffect, useState } from "react";
 
 const PhoneNumberForm = () => {
+  const [contactNumbers, setContactNumbers] = useState([]);
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    try {
+      const data = await getNumbers();
+      setContactNumbers(data);
+    } catch (e) {
+      console.log("Failed to load contacts", e);
+    }
+  };
+
   const contacts = [
     { id: '0', name: 'All Contacts', time: '30-01-24', phone: '#*********#' },
     { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
@@ -28,11 +45,16 @@ const PhoneNumberForm = () => {
     }
   });
 
+
   const onSubmit = async (data: PhoneType) => {
-    console.log("Submit Data:", data);
-    toast.success('number has been saved')
+    try {
+      await addNumber(data);
+    } catch (error) {
+      toast.error('error while adding number')
+    }
   };
 
+  console.log(contactNumbers);
   return (
     <View>
       <Text
@@ -119,7 +141,7 @@ const PhoneNumberForm = () => {
         </Text>
 
         <View>
-          {contacts.map((c, index) => (
+          {contactNumbers.map((c, index) => (
             <View key={index} className="mb-2">
               <View className="flex-row items-center gap-2">
                 <Feather
@@ -142,7 +164,7 @@ const PhoneNumberForm = () => {
                 <View className="flex-row items-center gap-2">
                   <Text
                     style={{ color: colors.light, fontFamily: 'regular' }}>
-                    {c.phone}
+                    {c.number}
                   </Text>
                   <Button
                     size='icon'

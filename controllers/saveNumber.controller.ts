@@ -4,24 +4,30 @@ import { toast } from "sonner-native";
 
 const PHONE_NUMER_KEY = 'phone_number_here';
 
-export const addNumber = async (data: PhoneType) => {
+export const addNumber = async (newNumber: PhoneType) => {
   try {
-    await AsyncStorage.setItem(PHONE_NUMER_KEY, JSON.stringify(data));
-    toast.success('number saved!');
+    const existingData = await AsyncStorage.getItem(PHONE_NUMER_KEY);
+    let currentNumbers = [];
+    if (existingData !== null) {
+      const parsed = JSON.parse(existingData);
+      currentNumbers = Array.isArray(parsed) ? parsed : [parsed];
+    }
+    const updatedNumbers = [...currentNumbers, newNumber];
+    await AsyncStorage.setItem(PHONE_NUMER_KEY, JSON.stringify(updatedNumbers));
+    toast.success('Number saved!');
   } catch (error) {
-    console.log(error);
+    console.log("Error saving number:", error);
+    toast.error('Failed to save');
   }
-}
+};
 
 export const getNumbers = async () => {
   try {
     const nums = await AsyncStorage.getItem(PHONE_NUMER_KEY);
-    if (nums !== null) {
-      return nums
-    }
-    return
+    return nums != null ? JSON.parse(nums) : [];
   } catch (error) {
-    console.log(error)
+    console.error("Error fetching numbers:", error);
+    return [];
   }
 }
 
