@@ -20,7 +20,7 @@ const PhoneNumberForm = () => {
     { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
   ];
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, control } = useForm<PhoneType>({
+  const { handleSubmit, formState: { errors, isSubmitting }, control } = useForm<PhoneType>({
     resolver: zodResolver(PhoneSchema),
     defaultValues: {
       number: '',
