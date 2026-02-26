@@ -6,8 +6,10 @@ import { PortalHost } from '@rn-primitives/portal';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { loadCheck } from '@/controllers/onboarding.controller';
 
 export {
   ErrorBoundary,
@@ -16,7 +18,11 @@ export {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+  const [appIsReady, setAppIsReady] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const router = useRouter();
+
+  const [fontsLoaded, fontError] = useFonts({
     'regular': require('@/assets/fonts/NoirPro-Regular.ttf'),
     'light': require('@/assets/fonts/NoirPro-Light.ttf'),
     'Medium': require('@/assets/fonts/NoirPro-Medium.ttf'),
@@ -25,13 +31,37 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
+    async function prepare() {
+      try {
+        const checked = await loadCheck();
+        if (checked) {
+          setShouldRedirect(true);
+        }
+      } catch (e) {
+        console.warn("Initialization Error:", e);
+      } finally {
+        setAppIsReady(true);
+      }
     }
-  }, [loaded, error]);
+    prepare();
+  }, []);
 
-  if (!loaded && !error) {
-    return <View style={{ flex: 1, backgroundColor: '#000000' }} />;
+  useEffect(() => {
+    if (appIsReady && (fontsLoaded || fontError)) {
+      if (shouldRedirect) {
+        const timer = setTimeout(() => {
+          router.replace('/share');
+          SplashScreen.hideAsync();
+        }, 1);
+        return () => clearTimeout(timer);
+      } else {
+        SplashScreen.hideAsync();
+      }
+    }
+  }, [appIsReady, fontsLoaded, fontError, shouldRedirect]);
+
+  if (!appIsReady || (!fontsLoaded && !fontError)) {
+    return null;
   }
 
   return (

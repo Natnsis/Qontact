@@ -25,7 +25,6 @@ const SLIDES = [
     img: require('@/assets/images/onboarding3.png')
   },
 ];
-
 export function Onboarding() {
   const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -37,7 +36,10 @@ export function Onboarding() {
 
   const checkData = async () => {
     try {
-      await loadCheck()
+      const checked = await loadCheck()
+      if (checked) {
+        router.replace('/share');
+      }
     } catch (error) {
       console.log(error)
     }

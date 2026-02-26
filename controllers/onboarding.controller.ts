@@ -14,9 +14,9 @@ export const loadCheck = async () => {
   try {
     const stored = await AsyncStorage.getItem(ONBOARDING_KEY);
     if (stored !== null) {
-      console.log('hehe i got balls')
+      return true;
     } else {
-      console.log('no balls')
+      return false;
     }
   } catch (error) {
     console.log(error)
