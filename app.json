@@ -1,31 +1,30 @@
 {
   "expo": {
     "name": "Qontact",
-    "slug": ".",
+    "slug": "qontact",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": ".",
+    "scheme": "qontact",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#000000",
+    "backgroundColor": "#111418",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#111418"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
+      "package": "com.qontact.app",
+      "versionCode": 1,
       "edgeToEdgeEnabled": true,
-      "backgroundColor": "#000000",
+      "backgroundColor": "#111418",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#111418"
       }
     },
     "web": {
@@ -39,6 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "611184f4-07cd-476d-a009-eac5b3da865a"
+      }
     }
   }
 }
