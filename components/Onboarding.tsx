@@ -1,9 +1,10 @@
 import { colors } from '@/constants/color';
 import { FlatList, View, Dimensions, Text, Image } from 'react-native';
-import { useRef, useState } from 'react';
-import { Button } from './ui/button';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { addCheck, loadCheck } from '@/controllers/onboarding.controller';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -24,15 +25,30 @@ const SLIDES = [
     img: require('@/assets/images/onboarding3.png')
   },
 ];
-
 export function Onboarding() {
   const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
-  const handlePress = () => {
+  useEffect(() => {
+    checkData()
+  }, []);
+
+  const checkData = async () => {
+    try {
+      const checked = await loadCheck()
+      if (checked) {
+        router.replace('/share');
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handlePress = async () => {
     const isLastSlide = currentIndex === SLIDES.length - 1;
     if (isLastSlide) {
+      await addCheck()
       router.replace('/share')
     } else {
       flatListRef.current?.scrollToIndex({

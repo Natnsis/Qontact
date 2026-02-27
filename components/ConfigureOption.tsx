@@ -37,7 +37,7 @@ const ConfigureOption = () => {
             onPress={() => setConfig('media')}
           >
             <Feather
-              name="phone"
+              name="codesandbox"
               size={18}
               color={config === 'media' ? '#111418' : colors.secondary}
             />
@@ -45,7 +45,7 @@ const ConfigureOption = () => {
               style={{ fontFamily: 'bold' }}
               className={config === 'media' ? 'text-[#111418]' : 'text-[#96dded]'}
             >
-              Medias
+              Social Medias
             </Text>
           </Button>
         </View>

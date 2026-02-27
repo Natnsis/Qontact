@@ -5,18 +5,62 @@ import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { Feather } from '@expo/vector-icons';
 import { useState } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { MediaSchema, MediaType } from "@/schema/media.schema"
+import { addUrl, deleteUrlById, getUrls } from "@/controllers/saveUrl.controller"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner-native"
 
 const SocialMediaForm = () => {
   const [platform, setPlatform] = useState('telegram');
-  const contacts = [
-    { id: '0', name: 'All Contacts', time: '30-01-24', phone: '#*********#' },
-    { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
-    { id: '2', name: 'Sara Belay', time: '02-02-24', phone: '+251911556677' },
-    { id: '3', name: 'Dawit Isaac', time: '15-02-24', phone: '+251920889900' },
-    { id: '4', name: 'Elias Tekle', time: '20-02-24', phone: '+251944112233' },
-    { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
-    { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
-  ];
+
+  const { data: mediaUrls } = useQuery({
+    queryKey: ['urls'],
+    queryFn: getUrls,
+  });
+
+  const queryClient = useQueryClient();
+
+  const getFormattedDate = () => {
+    const now = new Date();
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }).format(now);
+  };
+
+  const { handleSubmit, control, reset, formState: { errors, isSubmitting } } = useForm({
+    resolver: zodResolver(MediaSchema),
+    defaultValues: {
+      name: '',
+      url: '',
+      platform: 'telegram'
+    }
+  });
+
+  const onSubmit = async (data: MediaType) => {
+    try {
+      const now = getFormattedDate();
+      const payload = {
+        ...data,
+        createdAt: now,
+        id: Date.now().toString(),
+        platform: platform.toString()
+      };
+      await addUrl(payload);
+      reset();
+      queryClient.invalidateQueries({ queryKey: ['urls'] });
+    } catch (error) {
+      toast.error('error occured');
+      console.error(error);
+    }
+  };
 
   return (
     <View>
@@ -29,19 +73,61 @@ const SocialMediaForm = () => {
         className="">Telegram / Twitter links</Text>
 
       <View className="mt-2 mx-2 p-2">
-        <Label
-          style={{
-            color: colors.light,
-            fontFamily: 'light',
-            fontSize: 12
-          }}
-        >
-          Your URL
-        </Label>
-        <Input
-          style={{ fontFamily: 'light' }}
-          className="border-[#96dded] mb-5"
-          placeholder="http://*****" />
+        <View className="mb-2">
+          <Label
+            style={{
+              color: colors.light,
+              fontFamily: 'light',
+              fontSize: 12
+            }}
+          >
+            Channel/ Account name
+          </Label>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                onChangeText={onChange}
+                value={value}
+                style={{ fontFamily: 'light' }}
+                className="border-[#96dded]"
+                placeholder="My main channel" />
+            )}
+          />
+          {errors.name &&
+            <Text style={{ fontFamily: 'light', color: colors.primary }}>
+              {errors.name.message}
+            </Text>}
+        </View>
+
+        <View className=" mb-2">
+          <Label
+            style={{
+              color: colors.light,
+              fontFamily: 'light',
+              fontSize: 12
+            }}
+          >
+            Your URL
+          </Label>
+          <Controller
+            control={control}
+            name="url"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                onChangeText={onChange}
+                value={value}
+                style={{ fontFamily: 'light' }}
+                className="border-[#96dded]"
+                placeholder="http://*****" />
+            )}
+          />
+          {errors.url &&
+            <Text style={{ fontFamily: 'light', color: colors.primary }}>
+              {errors.url.message}
+            </Text>}
+        </View>
 
         <Label
           style={{
@@ -78,7 +164,12 @@ const SocialMediaForm = () => {
         </View>
 
         <View className="flex-row justify-end">
-          <Button style={{ backgroundColor: colors.secondary }}>
+          <Button
+            onPress={
+              handleSubmit(onSubmit)
+            }
+            disabled={isSubmitting}
+            style={{ backgroundColor: colors.secondary }}>
             <Text style={{ color: colors.dark, fontFamily: 'regular' }}>
               Save
             </Text>
@@ -96,39 +187,60 @@ const SocialMediaForm = () => {
           Saved Links
         </Text>
 
-        <View>
-          {contacts.map((c, index) => (
-            <View key={index} className="mb-2">
-              <View className="flex-row items-center gap-2">
-                <Feather
-                  name='phone'
-                  color={colors.dark}
-                  style={{ backgroundColor: colors.secondary }}
-                  className="p-2 rounded-full" />
-                <Text
-                  style={{ color: colors.light, fontFamily: 'regular' }}>
-                  {c.name}
-                </Text>
-              </View>
-              <View className="flex-row gap-2 items-center justify-between">
-                <View>
-                  <Text
-                    style={{ color: colors.light, fontFamily: 'light' }}>
-                    {c.time}
-                  </Text>
-                </View>
+        <View className="mt-2 px-2">
+          {mediaUrls && mediaUrls.length !== 0 ? (
+            mediaUrls.map((c, index) => (
+              <View key={c.id || index} className="mb-2">
                 <View className="flex-row items-center gap-2">
-                  <Text
-                    style={{ color: colors.light, fontFamily: 'regular' }}>
-                    {c.phone}
+                  <Feather
+                    name={c.platform === 'twitter' ? 'twitter' : 'send'} // Dynamic icon!
+                    color={colors.dark}
+                    style={{ backgroundColor: colors.secondary }}
+                    className="p-2 rounded-full"
+                  />
+                  <Text style={{ color: colors.light, fontFamily: 'regular' }}>
+                    {c.name}
                   </Text>
-                  <Button size='icon' variant='destructive'>
-                    <Feather name="trash" />
-                  </Button>
+                </View>
+
+                <View className="flex-row gap-2 items-center justify-between">
+                  <View>
+                    <Text style={{ color: colors.light, fontFamily: 'light', fontSize: 10 }}>
+                      {c.createdAt}
+                    </Text>
+                    <Text style={{ color: colors.light, fontFamily: 'regular' }}>
+                      {c.url}
+                    </Text>
+                    <Text style={{ color: colors.light, fontFamily: 'regular' }}>
+                      {c.platform}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row items-center gap-2">
+                    <Button
+                      size='icon'
+                      variant='destructive'
+                      onPress={async () => {
+                        await deleteUrlById(c.id);
+                        queryClient.invalidateQueries({ queryKey: ['urls'] });
+                      }}
+                    >
+                      <Feather name="trash" color="white" />
+                    </Button>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
+            ))
+          ) : (
+            <Text
+              style={{
+                color: colors.primary,
+                fontFamily: 'light'
+              }}
+              className="text-center">
+              No saved URLs.
+            </Text>
+          )}
         </View>
       </View>
     </View >
