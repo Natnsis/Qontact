@@ -97,6 +97,7 @@ const PhoneNumberForm = () => {
             name="name"
             render={({ field: { onChange, value } }) => (
               <Input
+                placeholder='john wick'
                 onChangeText={onChange}
                 value={value}
                 style={{ fontFamily: 'light' }}
@@ -125,6 +126,7 @@ const PhoneNumberForm = () => {
             name="number"
             render={({ field: { onChange, value } }) => (
               <Input
+                placeholder="0912345678"
                 onChangeText={onChange}
                 value={value}
                 keyboardType="numeric"

@@ -1,7 +1,14 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-export const UrlSchema = z.object({
-  url: z.string().url('Invalid URL format').startsWith('https://', 'only secure links allowed')
+export const MediaSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  url: z
+    .string()
+    .url("Invalid URL format")
+    .startsWith("https://", { message: "URL must be secure (https://)" }),
+  id: z.string().optional(),
+  createdAt: z.string().optional(),
+  platform: z.string()
 });
 
-export type UrlType = z.infer<typeof UrlSchema>;
+export type MediaType = z.infer<typeof MediaSchema>;

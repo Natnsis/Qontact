@@ -5,9 +5,45 @@ import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { Feather } from '@expo/vector-icons';
 import { useState } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { MediaSchema, MediaType } from "@/schema/media.schema"
+import { addUrl, getUrls } from "@/controllers/saveUrl.controller"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner-native"
 
 const SocialMediaForm = () => {
   const [platform, setPlatform] = useState('telegram');
+
+  const { data: mediaUrls } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: getUrls,
+  });
+
+  const queryClient = useQueryClient();
+
+  const getFormattedDate = () => {
+    const now = new Date();
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }).format(now);
+  };
+
+  const { handleSubmit, control, reset, formState: { errors, isSubmitting } } = useForm({
+    resolver: zodResolver(MediaSchema),
+    defaultValues: {
+      name: '',
+      url: '',
+      platform: 'telegram'
+    }
+  });
+
   const contacts = [
     { id: '0', name: 'All Contacts', time: '30-01-24', phone: '#*********#' },
     { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
@@ -17,6 +53,24 @@ const SocialMediaForm = () => {
     { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
     { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
   ];
+
+  const onSubmit = async (data: MediaType) => {
+    try {
+      const now = getFormattedDate();
+      const payload = {
+        ...data,
+        createdAt: now,
+        id: Date.now().toString(),
+        platform: platform.toString()
+      };
+      await addUrl(payload);
+      reset();
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+    } catch (error) {
+      toast.error('error occured');
+      console.error(error);
+    }
+  };
 
   return (
     <View>
@@ -29,19 +83,61 @@ const SocialMediaForm = () => {
         className="">Telegram / Twitter links</Text>
 
       <View className="mt-2 mx-2 p-2">
-        <Label
-          style={{
-            color: colors.light,
-            fontFamily: 'light',
-            fontSize: 12
-          }}
-        >
-          Your URL
-        </Label>
-        <Input
-          style={{ fontFamily: 'light' }}
-          className="border-[#96dded] mb-5"
-          placeholder="http://*****" />
+        <View className="mb-2">
+          <Label
+            style={{
+              color: colors.light,
+              fontFamily: 'light',
+              fontSize: 12
+            }}
+          >
+            Channel/ Account name
+          </Label>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                onChangeText={onChange}
+                value={value}
+                style={{ fontFamily: 'light' }}
+                className="border-[#96dded]"
+                placeholder="My main channel" />
+            )}
+          />
+          {errors.name &&
+            <Text style={{ fontFamily: 'light', color: colors.primary }}>
+              {errors.name.message}
+            </Text>}
+        </View>
+
+        <View className=" mb-2">
+          <Label
+            style={{
+              color: colors.light,
+              fontFamily: 'light',
+              fontSize: 12
+            }}
+          >
+            Your URL
+          </Label>
+          <Controller
+            control={control}
+            name="url"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                onChangeText={onChange}
+                value={value}
+                style={{ fontFamily: 'light' }}
+                className="border-[#96dded]"
+                placeholder="http://*****" />
+            )}
+          />
+          {errors.url &&
+            <Text style={{ fontFamily: 'light', color: colors.primary }}>
+              {errors.url.message}
+            </Text>}
+        </View>
 
         <Label
           style={{
@@ -78,7 +174,10 @@ const SocialMediaForm = () => {
         </View>
 
         <View className="flex-row justify-end">
-          <Button style={{ backgroundColor: colors.secondary }}>
+          <Button
+            onPress={handleSubmit(onSubmit, (err) => console.log("Validation Errors:", err))}
+            disabled={isSubmitting}
+            style={{ backgroundColor: colors.secondary }}>
             <Text style={{ color: colors.dark, fontFamily: 'regular' }}>
               Save
             </Text>
@@ -96,8 +195,8 @@ const SocialMediaForm = () => {
           Saved Links
         </Text>
 
-        <View>
-          {contacts.map((c, index) => (
+        <View className="mt-2">
+          {mediaUrls.map((c, index) => (
             <View key={index} className="mb-2">
               <View className="flex-row items-center gap-2">
                 <Feather
@@ -114,15 +213,17 @@ const SocialMediaForm = () => {
                 <View>
                   <Text
                     style={{ color: colors.light, fontFamily: 'light' }}>
-                    {c.time}
+                    {c.createdAt}
+                  </Text>
+                  <Text
+                    style={{ color: colors.light, fontFamily: 'regular' }}>
+                    {c.url}
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-2">
-                  <Text
-                    style={{ color: colors.light, fontFamily: 'regular' }}>
-                    {c.phone}
-                  </Text>
-                  <Button size='icon' variant='destructive'>
+                  <Button
+                    size='icon'
+                    variant='destructive'>
                     <Feather name="trash" />
                   </Button>
                 </View>
