@@ -204,7 +204,7 @@ const SocialMediaForm = () => {
                 </View>
 
                 <View className="flex-row gap-2 items-center justify-between">
-                  <View>
+                  <View className="flex-1">
                     <Text style={{ color: colors.light, fontFamily: 'light', fontSize: 10 }}>
                       {c.createdAt}
                     </Text>
