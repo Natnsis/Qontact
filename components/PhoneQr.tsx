@@ -52,13 +52,13 @@ const PhoneQr = () => {
         <Text style={{ fontFamily: 'heavy', color: colors.light }}>Select Numbers</Text>
       </View>
 
-      <View className="flex-row flex-wrap justify-between">
+      <View className="flex-row flex-wrap justify-between p-2">
         <View
           style={{
             backgroundColor: colors.background,
             width: '48%',
           }}
-          className='p-3 rounded-lg mb-3'
+          className='p-3 rounded-lg mb-3 border border-dashed border-[#96dded]'
         >
           <View className='flex-row justify-between'>
             <Text
@@ -67,23 +67,24 @@ const PhoneQr = () => {
             >
               All Contacts
             </Text>
-            <Feather name='phone' color={colors.secondary} size={18} />
+            <Feather name='users' color={colors.secondary} size={18} />
           </View>
 
           <View className='mt-2'>
             <Text style={{ fontFamily: 'light', color: colors.primary, fontSize: 12 }}>
-              #*********#
+              {contactNumbers?.length || 0} Contacts
             </Text>
 
             <View className='flex-row items-center justify-between mt-2'>
               <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 10 }}>
-                *
+                Master List
               </Text>
               <Feather name='corner-down-right' color={colors.secondary} size={14} />
             </View>
           </View>
         </View>
-        {contactNumbers.map((item) => (
+
+        {contactNumbers?.map((item) => (
           <View
             key={item.id}
             style={{
@@ -99,12 +100,16 @@ const PhoneQr = () => {
               >
                 {item.name}
               </Text>
-              <Feather name='phone' color={colors.secondary} size={18} />
+              <Feather
+                name={item.platform === 'twitter' ? 'twitter' : 'phone'}
+                color={colors.secondary}
+                size={18}
+              />
             </View>
 
             <View className='mt-2'>
               <Text style={{ fontFamily: 'light', color: colors.primary, fontSize: 12 }}>
-                {item.number}
+                {item.number || item.url}
               </Text>
 
               <View className='flex-row items-center justify-between mt-2'>
