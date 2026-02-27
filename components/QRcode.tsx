@@ -1,29 +1,55 @@
-import { View } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import { useQuery } from '@tanstack/react-query';
+import { getNumbers } from '@/controllers/saveNumber.controller';
 
-const QRcode = () => {
-  const contactInfo = {
-    name: 'John Doe',
-    phone: '+1234567890',
-    email: 'john@example.com'
-  };
+const QRcode = ({ id }) => {
+  const { data: contactNumbers, isLoading } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: getNumbers,
+  });
 
-  const vCardValue = `BEGIN:VCARD
+  if (isLoading) return <ActivityIndicator size="large" />;
+
+  let targetContacts = [];
+
+  if (id === 'all') {
+    targetContacts = contactNumbers || [];
+  } else {
+    targetContacts = contactNumbers?.filter((item) => item.id === id) || [];
+  }
+
+  const vCardValue = targetContacts
+    .map((c) => {
+      return `BEGIN:VCARD
 VERSION:3.0
-FN:${contactInfo.name}
-TEL:${contactInfo.phone}
-`
-  return (
-    <View
-      className='flex-row items-center justify-center h-full w-full mx-4'>
-      <QRCode
-        value={vCardValue}
-        size={200}
-        color="black"
-        backgroundColor="white"
-      />
-    </View>
-  )
-}
+FN:${c.name}
+TEL;TYPE=CELL:${c.number}
+REV:${c.createdAt}
+END:VCARD`;
+    })
+    .join('\n');
 
-export default QRcode
+  if (targetContacts.length === 0) {
+    return (
+      <View className="items-center justify-center">
+        <Text>No contact found</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className='flex-1 items-center justify-center mt-2'>
+      <View className="bg-white p-2 rounded-lg shadow-lg">
+        <QRCode
+          value={vCardValue}
+          size={250}
+          color="black"
+          backgroundColor="white"
+        />
+      </View>
+    </View>
+  );
+};
+
+export default QRcode;
