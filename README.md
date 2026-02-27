@@ -1,73 +1,100 @@
-# Minimal Template
+# 📇 Qontact  
+### The "Anime-Style" Contact Sharing Mini-App
 
-This is a [React Native](https://reactnative.dev/) project built with [Expo](https://expo.dev/) and [React Native Reusables](https://reactnativereusables.com).
+> "Wait, how do I spell your name again?"  
+Never hear this again.
 
-It was initialized using the following command:
-
-```bash
-npx @react-native-reusables/cli@latest init -t .
-```
-
-## Getting Started
-
-To run the development server:
-
-```bash
-    npm run dev
-    # or
-    yarn dev
-    # or
-    pnpm dev
-    # or
-    bun dev
-```
-
-This will start the Expo Dev Server. Open the app in:
-
-- **iOS**: press `i` to launch in the iOS simulator _(Mac only)_
-- **Android**: press `a` to launch in the Android emulator
-- **Web**: press `w` to run in a browser
-
-You can also scan the QR code using the [Expo Go](https://expo.dev/go) app on your device. This project fully supports running in Expo Go for quick testing on physical devices.
-
-## Adding components
-
-You can add more reusable components using the CLI:
-
-```bash
-npx react-native-reusables/cli@latest add [...components]
-```
-
-> e.g. `npx react-native-reusables/cli@latest add input textarea`
-
-If you don't specify any component names, you'll be prompted to select which components to add interactively. Use the `--all` flag to install all available components at once.
-
-## Project Features
-
-- ⚛️ Built with [Expo Router](https://expo.dev/router)
-- 🎨 Styled with [Tailwind CSS](https://tailwindcss.com/) via [Nativewind](https://www.nativewind.dev/)
-- 📦 UI powered by [React Native Reusables](https://github.com/founded-labs/react-native-reusables)
-- 🚀 New Architecture enabled
-- 🔥 Edge to Edge enabled
-- 📱 Runs on iOS, Android, and Web
-
-## Learn More
-
-To dive deeper into the technologies used:
-
-- [React Native Docs](https://reactnative.dev/docs/getting-started)
-- [Expo Docs](https://docs.expo.dev/)
-- [Nativewind Docs](https://www.nativewind.dev/)
-- [React Native Reusables](https://reactnativereusables.com)
-
-## Deploy with EAS
-
-The easiest way to deploy your app is with [Expo Application Services (EAS)](https://expo.dev/eas).
-
-- [EAS Build](https://docs.expo.dev/build/introduction/)
-- [EAS Updates](https://docs.expo.dev/eas-update/introduction/)
-- [EAS Submit](https://docs.expo.dev/submit/introduction/)
+Inspired by those slick contact-sharing scenes in anime, **Qontact** is a mini-app designed to make networking at gatherings, meetups, or parties instant and effortless.
 
 ---
 
-If you enjoy using React Native Reusables, please consider giving it a ⭐ on [GitHub](https://github.com/founded-labs/react-native-reusables). Your support means a lot!
+## 🚀 The Vibe
+
+Imagine you're at a tech meetup in Addis.  
+You meet someone awesome.
+
+Instead of fumbling with your phone or shouting your handle over loud music:
+
+1. Open **Qontact**
+2. They open their camera
+3. Scan  
+4. Done.
+
+⚡ Networking at the speed of light.
+
+---
+
+## 📱 Features
+
+- ⚡ **Instant QR Generation**  
+  Converts your contact info into a scannable QR code using the **vCard standard**.
+
+- 🌐 **Social Integration**  
+  Share your Telegram, Instagram, GitHub, and more.
+
+- 🌙 **Minimalist UI**  
+  Clean, dark-mode friendly design for quick access.
+
+- 📡 **Offline First**  
+  No internet required to generate or display your QR code.
+
+---
+
+## 🛠️ Tech Stack
+
+Built for performance and developer experience:
+
+- **Engine:** React Native  
+- **Styling:** NativeWind (Tailwind CSS for React Native)  
+- **Icons:** Lucide React Native  
+- **QR Logic:** react-native-qrcode-svg  
+
+---
+
+## 📸 Demo
+
+<p align="center">
+  <img src="./assets/demo1.jpg" width="250" />
+  <img src="./assets/demo2.jpg" width="250" />
+  <img src="./assets/demo3.jpg" width="250" />
+  <img src="./assets/demo4.jpg" width="250" />
+  <img src="./assets/demo5.jpg" width="250" />
+</p>
+
+---
+
+## 💻 Development & Contribution
+
+Want to explore the code or contribute?
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/Natnsis/Qontact.git
+cd Qontact
+```
+
+### 2️⃣ Install Dependencies
+
+Install all required project dependencies:
+
+```bash
+npm install
+# or if you prefer Yarn
+yarn install
+```
+---
+
+### 3️⃣ Run the App on Android
+
+Ensure you have one of the following:
+
+- An Android emulator running  
+- A physical Android device connected (USB debugging enabled)
+
+Then run:
+
+```bash
+npx react-native run-android
+```
+
