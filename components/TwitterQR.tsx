@@ -69,7 +69,6 @@ const TwitterQR = () => {
             </View>
 
             <View className="flex-row items-center justify-between mt-1 gap-2">
-              {/* flex-1 prevents the URL from pushing other elements off-screen */}
               <View className="flex-1">
                 <Text
                   numberOfLines={1}
@@ -88,8 +87,8 @@ const TwitterQR = () => {
           </View>
         ))
       ) : (
-        <Text style={{ color: colors.light, textAlign: 'center' }}>
-          No Telegram URLs saved
+        <Text style={{ color: colors.secondary, textAlign: 'center', fontFamily: 'light' }}>
+          No Twitter URLs saved
         </Text>
       )}
     </View>
