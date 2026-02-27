@@ -1,5 +1,5 @@
 import { colors } from '@/constants/color';
-import { View, Text, Dimensions } from 'react-native';
+import { View, Text, Dimensions, Pressable } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import { getTelegramUrls } from '@/controllers/saveUrl.controller';
 const TelegramQR = () => {
   const { height } = Dimensions.get('screen');
   const [hidden, setHidden] = useState(true);
+  const [selectedId, setSelectedId] = useState('')
 
   const { data: telegramUrls } = useQuery({
     queryKey: ['tgUrls'],
@@ -45,7 +46,7 @@ const TelegramQR = () => {
               </View>
             </View>
             :
-            <TQRcode />
+            <TQRcode id={selectedId} />
           }
         </View>
       </View>
@@ -55,10 +56,11 @@ const TelegramQR = () => {
       </View>
       {telegramUrls && telegramUrls.length > 0 ? (
         telegramUrls.map((item) => (
-          <View
+          <Pressable
             key={item.id}
             style={{ backgroundColor: colors.background }}
-            className="p-3 rounded-lg mb-3"
+            onPress={() => setSelectedId(item.id!)}
+            className={`p-3 rounded-lg mb-3 ${selectedId === item.id ? 'border border-dashed border-[#96dded]' : ''}`}
           >
             <View className="flex-row justify-between items-center">
               <Text style={{ fontFamily: 'regular', color: colors.light }}>
@@ -83,7 +85,7 @@ const TelegramQR = () => {
                 </Text>
               </View>
             </View>
-          </View>
+          </Pressable>
         ))
       ) : (
         <Text style={{ color: colors.secondary, textAlign: 'center', fontFamily: 'light' }}>

@@ -3,6 +3,17 @@ import { View, Text, Linking } from "react-native";
 import { Button } from "./ui/button";
 import { Feather } from '@expo/vector-icons';
 import { Badge } from "./ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { clearMyDevData } from "@/controllers/overall.controller";
 
 const HubOptions = () => {
   return (
@@ -74,6 +85,48 @@ const HubOptions = () => {
           </View>
         </Badge>
       </View>
+
+      <View className="mt-2">
+        <AlertDialog>
+          <AlertDialogTrigger
+            style={{
+              borderWidth: 1,
+              borderColor: colors.secondary,
+              backgroundColor: colors.dark,
+            }}
+            className="flex-row items-center justify-center gap-2 mx-2 rounded py-2"
+          >
+            <Feather name="trash" color={colors.light} size={15} />
+            <Text style={{ color: colors.light, fontFamily: 'regular' }}>
+              Clear all data
+            </Text>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogDescription style={{ fontFamily: 'light' }}>
+                This action cannot be undone. This will permanently delete all data you saved in the app.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-row justify-between">
+              <AlertDialogCancel
+                style={{ borderColor: colors.primary, borderWidth: 2 }}
+                className="w-[45%]">
+                <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Cancel</Text>
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="w-[45%]"
+                style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.dark }}
+                onPress={() => {
+                  clearMyDevData()
+                }}
+              >
+                <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Continue</Text>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </View>
+
 
       <View style={{ flex: 1 }} />
 
