@@ -31,6 +31,37 @@ export const getUrls = async () => {
   }
 }
 
+export const getTelegramUrls = async () => {
+  try {
+    const data = await AsyncStorage.getItem(MEDIA_KEY);
+    if (!data) return [];
+
+    const jsonUrls: MediaType[] = JSON.parse(data);
+
+    return jsonUrls.filter(item => item.platform === 'telegram');
+
+  } catch (error) {
+    console.error("Error fetching TG urls:", error);
+    return [];
+  }
+}
+
+
+export const getTwitterUrls = async () => {
+  try {
+    const data = await AsyncStorage.getItem(MEDIA_KEY);
+    if (!data) return [];
+
+    const jsonUrls: MediaType[] = JSON.parse(data);
+
+    return jsonUrls.filter(item => item.platform === 'twitter');
+
+  } catch (error) {
+    console.error("Error fetching TG urls:", error);
+    return [];
+  }
+}
+
 export const deleteUrlById = async (id: string) => {
   try {
     const existingData = await AsyncStorage.getItem(MEDIA_KEY);

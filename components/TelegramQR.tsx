@@ -4,10 +4,17 @@ import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import TQRcode from './TQRcode';
+import { useQuery } from "@tanstack/react-query";
+import { getTelegramUrls } from '@/controllers/saveUrl.controller';
 
 const TelegramQR = () => {
   const { height } = Dimensions.get('screen');
   const [hidden, setHidden] = useState(true);
+
+  const { data: telegramUrls } = useQuery({
+    queryKey: ['tgUrls'],
+    queryFn: getTelegramUrls,
+  });
 
   const contacts = [
     { id: '1', name: 'Commit Happens', time: '30-01-24', phone: 'https://t.me/bugpusher' },
@@ -55,28 +62,44 @@ const TelegramQR = () => {
       <View className='mt-5 mb-2'>
         <Text style={{ fontFamily: 'heavy', color: colors.light }}>Select which to share</Text>
       </View>
+      {telegramUrls && telegramUrls.length > 0 ? (
+        telegramUrls.map((item) => (
+          <View
+            key={item.id}
+            style={{ backgroundColor: colors.background }}
+            className="p-3 rounded-lg mb-3"
+          >
+            <View className="flex-row justify-between items-center">
+              <Text style={{ fontFamily: 'regular', color: colors.light }}>
+                {item.name}
+              </Text>
+              <Feather name="send" color={colors.secondary} size={23} />
+            </View>
 
-      {contacts.map((item) => (
-        <View
-          key={item.id}
-          style={{ backgroundColor: colors.background }}
-          className='p-3 rounded-lg mb-3'
-        >
-          <View className='flex-row justify-between'>
-            <Text style={{ fontFamily: 'regular', color: colors.light }}>{item.name}</Text>
-            <Feather name='send' color={colors.secondary} size={23} />
-          </View>
-          <View className='flex-row items-center justify-between mt-1'>
-            <Text style={{ fontFamily: 'light', color: colors.primary }}>{item.phone}</Text>
-            <View className='flex-row items-center justify-end'>
-              <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 12 }}>{item.time}</Text>
-              <Button size='icon' variant='ghost'>
-                <Feather name='corner-down-right' color={colors.secondary} size={18} />
-              </Button>
+            <View className="flex-row items-center justify-between mt-1 gap-2">
+              {/* flex-1 prevents the URL from pushing other elements off-screen */}
+              <View className="flex-1">
+                <Text
+                  numberOfLines={1}
+                  style={{ fontFamily: 'light', color: colors.primary }}
+                >
+                  {item.url}
+                </Text>
+              </View>
+
+              <View>
+                <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 10 }}>
+                  {item.createdAt}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      ))}
+        ))
+      ) : (
+        <Text style={{ color: colors.light, textAlign: 'center' }}>
+          No Telegram URLs saved
+        </Text>
+      )}
     </View>
   )
 }
