@@ -31,31 +31,23 @@ export const getUrls = async () => {
   }
 }
 
-export const deleteNumberById = async (id: string) => {
+export const deleteUrlById = async (id: string) => {
   try {
     const existingData = await AsyncStorage.getItem(MEDIA_KEY);
     if (!existingData) return;
 
-    const currentNumbers: MediaType[] = JSON.parse(existingData);
-    const updatedNumbers = currentNumbers.filter(
+    const currentUrls: MediaType[] = JSON.parse(existingData);
+    const updatedUrls = currentUrls.filter(
       (item) => item.id !== id
     );
 
-    await AsyncStorage.setItem(MEDIA_KEY, JSON.stringify(updatedNumbers));
+    await AsyncStorage.setItem(MEDIA_KEY, JSON.stringify(updatedUrls));
 
-    toast.success('Contact deleted');
-    return updatedNumbers;
+    toast.success('Media deleted');
+    return updatedUrls;
   } catch (error) {
     console.error("Error deleting record:", error);
     toast.error('Failed to delete');
   }
 };
 
-export const wipeContacts = async () => {
-  try {
-    await AsyncStorage.removeItem(MEDIA_KEY);
-    toast.success('all contacts cleared');
-  } catch (error) {
-    console.log('error clearing data')
-  }
-}
