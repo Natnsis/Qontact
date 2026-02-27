@@ -54,11 +54,11 @@ Built for performance and developer experience:
 ## 📸 Demo
 
 <p align="center">
-  <img src="./assets/demo1.jpg" width="250" />
-  <img src="./assets/demo2.jpg" width="250" />
-  <img src="./assets/demo3.jpg" width="250" />
-  <img src="./assets/demo4.jpg" width="250" />
-  <img src="./assets/demo5.jpg" width="250" />
+  <img src="./assets/images/demo1.jpg" width="250" />
+  <img src="./assets/images/demo2.jpg" width="250" />
+  <img src="./assets/images/demo3.jpg" width="250" />
+  <img src="./assets/images/demo4.jpg" width="250" />
+  <img src="./assets/images/demo5.jpg" width="250" />
 </p>
 
 ---
