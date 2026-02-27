@@ -11,6 +11,7 @@ import TwitterQR from '@/components/TwitterQR';
 const index = () => {
   const { height } = Dimensions.get('screen');
   const [platform, setPlatform] = useState('phone');
+
   return (
     <SafeAreaView
       style={{

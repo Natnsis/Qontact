@@ -4,20 +4,17 @@ import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import QRcode from './QRcode';
+import { useQuery } from '@tanstack/react-query';
+import { getNumbers } from '@/controllers/saveNumber.controller';
 
 const PhoneQr = () => {
   const { height } = Dimensions.get('screen');
   const [hidden, setHidden] = useState(true);
 
-  const contacts = [
-    { id: '0', name: 'All Contacts', time: '30-01-24', phone: '#*********#' },
-    { id: '1', name: 'Natnael Sisay', time: '30-01-24', phone: '+251911223344' },
-    { id: '2', name: 'Sara Belay', time: '02-02-24', phone: '+251911556677' },
-    { id: '3', name: 'Dawit Isaac', time: '15-02-24', phone: '+251920889900' },
-    { id: '4', name: 'Elias Tekle', time: '20-02-24', phone: '+251944112233' },
-    { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
-    { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
-  ];
+  const { data: contactNumbers } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: getNumbers,
+  });
 
   return (
     <View>
@@ -56,7 +53,37 @@ const PhoneQr = () => {
       </View>
 
       <View className="flex-row flex-wrap justify-between">
-        {contacts.map((item) => (
+        <View
+          style={{
+            backgroundColor: colors.background,
+            width: '48%',
+          }}
+          className='p-3 rounded-lg mb-3'
+        >
+          <View className='flex-row justify-between'>
+            <Text
+              numberOfLines={1}
+              style={{ fontFamily: 'regular', color: colors.light, flex: 1 }}
+            >
+              All Contacts
+            </Text>
+            <Feather name='phone' color={colors.secondary} size={18} />
+          </View>
+
+          <View className='mt-2'>
+            <Text style={{ fontFamily: 'light', color: colors.primary, fontSize: 12 }}>
+              #*********#
+            </Text>
+
+            <View className='flex-row items-center justify-between mt-2'>
+              <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 10 }}>
+                *
+              </Text>
+              <Feather name='corner-down-right' color={colors.secondary} size={14} />
+            </View>
+          </View>
+        </View>
+        {contactNumbers.map((item) => (
           <View
             key={item.id}
             style={{
@@ -77,16 +104,13 @@ const PhoneQr = () => {
 
             <View className='mt-2'>
               <Text style={{ fontFamily: 'light', color: colors.primary, fontSize: 12 }}>
-                {item.phone}
+                {item.number}
               </Text>
 
               <View className='flex-row items-center justify-between mt-2'>
                 <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 10 }}>
-                  {item.time}
+                  {item.createdAt}
                 </Text>
-                <Button size='sm' variant='ghost' className="h-6 w-6">
-                  <Feather name='corner-down-right' color={colors.secondary} size={14} />
-                </Button>
               </View>
             </View>
           </View>
