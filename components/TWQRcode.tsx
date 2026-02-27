@@ -1,20 +1,44 @@
-import { View } from 'react-native';
+import { View, ActivityIndicator, Text } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import { useQuery } from '@tanstack/react-query';
+import { getTwitterUrls } from '@/controllers/saveUrl.controller';
+import { colors } from '@/constants/color';
+const TWQRcode = ({ id }: { id: string }) => {
+  const { data: twitterUrls, isLoading } = useQuery({
+    queryKey: ['tgUrls'],
+    queryFn: getTwitterUrls,
+  });
 
-const TWQRcode = () => {
-  const telegram_url = "https://t.me/Flawless_22_4"
+  if (isLoading) return <ActivityIndicator size="large" className="mt-10" />;
+  const targetObject = twitterUrls?.find((item: any) => item.id === id);
+  const qrValue = targetObject ? targetObject.url : "https://x.me/default";
+
+  if (!targetObject && id !== 'all') {
+    return <Text className='text-center' style={{ color: colors.primary, fontFamily: 'regular' }}>
+      URL not found
+    </Text>;
+  }
 
   return (
-    <View
-      className='flex-row items-center justify-center h-full w-full mx-4'>
-      <QRCode
-        value={telegram_url}
-        size={200}
-        color="black"
-        backgroundColor="white"
-      />
-    </View>
-  )
-}
+    <View className='flex-1 items-center justify-center p-4'>
+      <View className="bg-white rounded-xl shadow-md">
+        <QRCode
+          value={qrValue}
+          size={220}
+          color="black"
+          backgroundColor="white"
+        />
+      </View>
 
-export default TWQRcode
+      {targetObject && (
+        <Text
+          style={{ fontFamily: 'light', color: colors.primary }}
+          className="text-white mt-1 font-bold">
+          {targetObject.name}
+        </Text>
+      )}
+    </View>
+  );
+};
+
+export default TWQRcode;

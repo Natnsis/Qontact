@@ -2,8 +2,9 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useQuery } from '@tanstack/react-query';
 import { getNumbers } from '@/controllers/saveNumber.controller';
+import { colors } from '@/constants/color';
 
-const QRcode = ({ id }) => {
+const QRcode = ({ id }: { id: string }) => {
   const { data: contactNumbers, isLoading } = useQuery({
     queryKey: ['contacts'],
     queryFn: getNumbers,
@@ -33,7 +34,11 @@ END:VCARD`;
   if (targetContacts.length === 0) {
     return (
       <View className="items-center justify-center">
-        <Text>No contact found</Text>
+        <Text
+          className='text-center'
+          style={{ color: colors.primary, fontFamily: 'regular' }}>
+          No contact found (make sure you selected a number)
+        </Text>
       </View>
     );
   }

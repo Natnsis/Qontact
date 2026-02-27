@@ -1,5 +1,5 @@
 import { colors } from '@/constants/color';
-import { View, Text, Dimensions } from 'react-native';
+import { View, Text, Dimensions, Pressable } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -10,6 +10,8 @@ import { getTwitterUrls } from '@/controllers/saveUrl.controller';
 const TwitterQR = () => {
   const { height } = Dimensions.get('screen');
   const [hidden, setHidden] = useState(true);
+
+  const [selectedId, setSelectedId] = useState('')
 
   const { data: twitterUrls } = useQuery({
     queryKey: ['twUrls'],
@@ -45,7 +47,7 @@ const TwitterQR = () => {
               </View>
             </View>
             :
-            <TWQRcode />
+            <TWQRcode id={selectedId} />
           }
         </View>
       </View>
@@ -56,10 +58,11 @@ const TwitterQR = () => {
 
       {twitterUrls && twitterUrls.length > 0 ? (
         twitterUrls.map((item) => (
-          <View
+          <Pressable
             key={item.id}
             style={{ backgroundColor: colors.background }}
-            className="p-3 rounded-lg mb-3"
+            onPress={() => setSelectedId(item.id!)}
+            className={`p-3 rounded-lg mb-3 ${selectedId === item.id ? 'border border-dashed border-[#96dded]' : ''}`}
           >
             <View className="flex-row justify-between items-center">
               <Text style={{ fontFamily: 'regular', color: colors.light }}>
@@ -84,7 +87,7 @@ const TwitterQR = () => {
                 </Text>
               </View>
             </View>
-          </View>
+          </Pressable>
         ))
       ) : (
         <Text style={{ color: colors.secondary, textAlign: 'center', fontFamily: 'light' }}>
