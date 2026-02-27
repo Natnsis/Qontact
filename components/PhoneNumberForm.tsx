@@ -10,6 +10,17 @@ import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
 import { addNumber, deleteNumberById, getNumbers, wipeContacts } from "@/controllers/saveNumber.controller";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner-native";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const PhoneNumberForm = () => {
   const { data: contactNumbers } = useQuery({
@@ -139,7 +150,7 @@ const PhoneNumberForm = () => {
         </View>
       </View>
 
-      <View>
+      <View className="mt-2">
         <View className="flex-row items-center justify-between">
           <Text
             style={{
@@ -149,24 +160,47 @@ const PhoneNumberForm = () => {
             }}>
             Saved Numbers
           </Text>
-          <Button
-            variant='ghost'
-            onPress={() => {
-              wipeContacts()
-              queryClient.invalidateQueries({ queryKey: ['contacts'] });
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: 'regular',
-                color: colors.light
-              }}
-            >
-              Remove All
-            </Text>
-          </Button>
+          <View className="px-2">
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <Text
+                  style={{
+                    fontFamily: 'regular',
+                    color: colors.light
+                  }}
+                >
+                  Remove All
+                </Text>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogDescription style={{ fontFamily: 'light' }}>
+                    This action cannot be undone. This will permanently delete your contacts and remove
+                    your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex-row justify-between">
+                  <AlertDialogCancel
+                    style={{ borderColor: colors.primary, borderWidth: 2 }}
+                    className="w-[45%]">
+                    <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Cancel</Text>
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="w-[45%]"
+                    style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.dark }}
+                    onPress={() => {
+                      wipeContacts()
+                      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+                    }}
+                  >
+                    <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Continue</Text>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </View>
         </View>
-        {contactNumbers ?
+        {contactNumbers && contactNumbers.length !== 0 ?
           <View>
             {contactNumbers.map((c, index) => (
               <View key={index} className="mb-2">
@@ -215,7 +249,7 @@ const PhoneNumberForm = () => {
           <Text
             style={{ fontFamily: 'light', color: colors.primary }}
             className="text-center mt-2">
-            no numbers found.
+            no numbers saved.
           </Text>
         }
       </View>
