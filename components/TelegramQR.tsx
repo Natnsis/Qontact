@@ -16,15 +16,6 @@ const TelegramQR = () => {
     queryFn: getTelegramUrls,
   });
 
-  const contacts = [
-    { id: '1', name: 'Commit Happens', time: '30-01-24', phone: 'https://t.me/bugpusher' },
-    { id: '2', name: 'Sara Belay', time: '02-02-24', phone: 'https://t.me/MineCrafters101' },
-    { id: '3', name: 'Dawit Isaac', time: '15-02-24', phone: '+251920889900' },
-    { id: '4', name: 'Elias Tekle', time: '20-02-24', phone: '+251944112233' },
-    { id: '5', name: 'Marta Hailu', time: '22-02-24', phone: '+251912004455' },
-    { id: '6', name: 'Yonas Alemu', time: '24-02-24', phone: '+251930778899' },
-  ];
-
   return (
     <View>
       <View
@@ -77,7 +68,6 @@ const TelegramQR = () => {
             </View>
 
             <View className="flex-row items-center justify-between mt-1 gap-2">
-              {/* flex-1 prevents the URL from pushing other elements off-screen */}
               <View className="flex-1">
                 <Text
                   numberOfLines={1}
@@ -96,7 +86,7 @@ const TelegramQR = () => {
           </View>
         ))
       ) : (
-        <Text style={{ color: colors.light, textAlign: 'center' }}>
+        <Text style={{ color: colors.secondary, textAlign: 'center', fontFamily: 'light' }}>
           No Telegram URLs saved
         </Text>
       )}
