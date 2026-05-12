@@ -2,6 +2,7 @@ import { colors } from '@/constants/color';
 import { clearMyDevData } from '@/controllers/overall.controller';
 import { Feather } from '@expo/vector-icons';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
+import * as Contacts from 'expo-contacts';
 import { useRef, useState } from 'react';
 import { Linking, ScrollView, Text, View } from 'react-native';
 import { toast } from 'sonner-native';
@@ -65,7 +66,9 @@ const ScanOptions = () => {
   };
 
   return (
-    <View className="flex-1 px-3 pt-3">
+    <ScrollView
+      className="flex-1"
+      contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 12, paddingTop: 12 }}>
       <Badge variant="secondary">
         <Text style={{ color: colors.light, fontFamily: 'regular' }} className="p-2">
           Scan QR codes inside Qontact when the default camera app cannot read them.
@@ -154,16 +157,44 @@ const ScanOptions = () => {
             </View>
           ))}
 
-          {scanResult.actionUrl ? (
+          {(scanResult.contactPayload || scanResult.actionUrl) ? (
             <Button
               onPress={async () => {
                 try {
-                  const canOpen = await Linking.canOpenURL(scanResult.actionUrl!);
-                  if (!canOpen) {
-                    toast.error('Unable to perform this action here.');
-                    return;
+                  if (scanResult.contactPayload) {
+                    const { status } = await Contacts.requestPermissionsAsync();
+                    if (status !== 'granted') {
+                      toast.error('Contacts permission is required.');
+                      return;
+                    }
+                    const contact: Contacts.Contact = {
+                      contactType: Contacts.ContactTypes.Person,
+                      name: scanResult.contactPayload.name ?? scanResult.contactPayload.phone ?? '',
+                      ...(scanResult.contactPayload.name
+                        ? { firstName: scanResult.contactPayload.name }
+                        : {}),
+                      ...(scanResult.contactPayload.phone
+                        ? {
+                            phoneNumbers: [
+                              {
+                                number: scanResult.contactPayload.phone,
+                                label: 'mobile',
+                              },
+                            ],
+                          }
+                        : {}),
+                    };
+                    await Contacts.presentFormAsync(undefined, contact, {
+                      isNew: true,
+                    });
+                  } else if (scanResult.actionUrl) {
+                    const canOpen = await Linking.canOpenURL(scanResult.actionUrl);
+                    if (!canOpen) {
+                      toast.error('Unable to perform this action here.');
+                      return;
+                    }
+                    await Linking.openURL(scanResult.actionUrl);
                   }
-                  await Linking.openURL(scanResult.actionUrl!);
                 } catch {
                   toast.error('Action failed.');
                 }
@@ -237,7 +268,7 @@ const ScanOptions = () => {
           Telegram
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

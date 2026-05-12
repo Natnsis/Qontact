@@ -8,6 +8,7 @@ export type ParsedQrData = {
   entries: Array<{ label: string; value: string }>;
   actionLabel?: string;
   actionUrl?: string;
+  contactPayload?: { name?: string; phone?: string };
 };
 
 const normalize = (value: string) => value.trim();
@@ -43,8 +44,9 @@ const makeContactFallback = (name: string, phone: string, raw: string): ParsedQr
       { label: 'Name', value: name.trim() },
       { label: 'Phone', value: cleaned },
     ],
-    actionLabel: cleaned ? 'Call contact' : undefined,
-    actionUrl: cleaned ? `tel:${cleaned}` : undefined,
+    actionLabel: cleaned ? 'Add to Contacts' : undefined,
+    actionUrl: undefined,
+    contactPayload: cleaned ? { name: name.trim(), phone: cleaned } : undefined,
   };
 };
 
@@ -59,15 +61,16 @@ const makeUrlResult = (url: string): ParsedQrData => ({
 });
 
 const makeTelResult = (value: string): ParsedQrData => {
-  const tel = cleanPhone(value);
+  const tel = cleanPhone(value.replace(/^tel:/i, ''));
   return {
     kind: 'tel',
     raw: value,
     title: 'Phone number detected',
-    description: 'This QR code contains a phone number you can call.',
+    description: 'This QR code contains a phone number.',
     entries: [{ label: 'Phone', value: tel }],
-    actionLabel: 'Call number',
-    actionUrl: `tel:${tel}`,
+    actionLabel: 'Add to Contacts',
+    actionUrl: undefined,
+    contactPayload: { phone: tel },
   };
 };
 
@@ -165,8 +168,9 @@ const parseVCard = (data: string): ParsedQrData | null => {
     title: 'Contact QR detected',
     description: 'This QR contains a contact card (VCARD).',
     entries,
-    actionLabel: phone ? 'Call contact' : email ? 'Email contact' : url ? 'Open link' : undefined,
-    actionUrl: phone ? `tel:${phone}` : email ? `mailto:${email}` : url ? url : undefined,
+    actionLabel: phone ? 'Add to Contacts' : email ? 'Email contact' : url ? 'Open link' : undefined,
+    actionUrl: phone ? undefined : email ? `mailto:${email}` : url ? url : undefined,
+    contactPayload: phone ? { name: name || undefined, phone } : undefined,
   };
 };
 
@@ -209,8 +213,9 @@ const parseMecard = (data: string): ParsedQrData | null => {
     title: 'Contact QR detected',
     description: 'This QR contains a contact card (MECARD).',
     entries,
-    actionLabel: phone ? 'Call contact' : email ? 'Email contact' : url ? 'Open link' : undefined,
-    actionUrl: phone ? `tel:${phone}` : email ? `mailto:${email}` : url ? url : undefined,
+    actionLabel: phone ? 'Add to Contacts' : email ? 'Email contact' : url ? 'Open link' : undefined,
+    actionUrl: phone ? undefined : email ? `mailto:${email}` : url ? url : undefined,
+    contactPayload: phone ? { name: name || undefined, phone } : undefined,
   };
 };
 
