@@ -10,7 +10,7 @@ import { getNumbers } from '@/controllers/saveNumber.controller';
 const PhoneQr = () => {
   const { height } = Dimensions.get('screen');
   const [hidden, setHidden] = useState(true);
-  const [selectedOption, setSelectedOption] = useState('hehe');
+  const [selectedOption, setSelectedOption] = useState('');
 
   const { data: contactNumbers } = useQuery({
     queryKey: ['contacts'],
@@ -54,41 +54,6 @@ const PhoneQr = () => {
       </View>
 
       <View className="flex-row flex-wrap justify-between p-2">
-        <Pressable
-          onPress={() => setSelectedOption('all')}
-          style={{
-            backgroundColor: colors.background,
-            width: '48%',
-          }}
-          className={`p-3 rounded-lg mb-3 ${selectedOption === 'all' ? 'border border-dashed border-[#96dded]' : ''}`}
-        >
-
-          <View
-          >
-            <View className='flex-row justify-between'>
-              <Text
-                numberOfLines={1}
-                style={{ fontFamily: 'regular', color: colors.light, flex: 1 }}
-              >
-                All Contacts
-              </Text>
-              <Feather name='users' color={colors.secondary} size={18} />
-            </View>
-
-            <View className='mt-2'>
-              <Text style={{ fontFamily: 'light', color: colors.primary, fontSize: 12 }}>
-                {contactNumbers?.length || 0} Contacts
-              </Text>
-
-              <View className='flex-row items-center justify-between mt-2'>
-                <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 10 }}>
-                  Master List
-                </Text>
-                <Feather name='corner-down-right' color={colors.secondary} size={14} />
-              </View>
-            </View>
-          </View>
-        </Pressable>
 
         {contactNumbers?.map((item) => (
           <Pressable
