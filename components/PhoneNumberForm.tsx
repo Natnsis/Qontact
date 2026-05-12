@@ -18,6 +18,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
@@ -176,8 +177,8 @@ const PhoneNumberForm = () => {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogDescription style={{ fontFamily: 'light' }}>
-                    This action cannot be undone. This will permanently delete your contacts and remove
-                    your data from our servers.
+                    This action cannot be undone. This will permanently delete your saved phone numbers
+                    from this device.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="flex-row justify-between">
@@ -230,17 +231,41 @@ const PhoneNumberForm = () => {
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">
-                    <Button
-                      size='icon'
-                      variant='destructive'
-                      onPress={async () => {
-                        await deleteNumberById(c.id)
-                        queryClient.invalidateQueries({ queryKey: ['contacts'] });
-                      }
-                      }
-                    >
-                      <Feather name="trash" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        style={{ backgroundColor: '#ef4444' }}
+                        className="h-10 w-10 items-center justify-center rounded-md"
+                      >
+                        <Feather name="trash" color="white" />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle style={{ color: colors.primary, fontFamily: 'regular' }}>
+                            Delete this number?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription style={{ fontFamily: 'light' }}>
+                            This will remove {c.name}'s phone number from this device.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="flex-row justify-between">
+                          <AlertDialogCancel
+                            style={{ borderColor: colors.primary, borderWidth: 2 }}
+                            className="w-[45%]">
+                            <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Cancel</Text>
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="w-[45%]"
+                            style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.dark }}
+                            onPress={async () => {
+                              await deleteNumberById(c.id)
+                              queryClient.invalidateQueries({ queryKey: ['contacts'] });
+                            }}
+                          >
+                            <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Continue</Text>
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </View>
                 </View>
               </View>

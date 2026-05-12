@@ -1,27 +1,15 @@
 import Header from "@/components/Header"
-import HubOptions from "@/components/HubOptions"
+import ScanOptions from "@/components/ScanOptions"
 import { colors } from "@/constants/color"
-import { Dimensions } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 const index = () => {
-  const { height } = Dimensions.get('screen');
   return (
     <SafeAreaView style={{
       backgroundColor: colors.dark,
-      height: height
+      flex: 1
     }}>
       <Header face="hub" />
-      <HubOptions />
+      <ScanOptions />
     </SafeAreaView>
   )
 }

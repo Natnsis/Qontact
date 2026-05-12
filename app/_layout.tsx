@@ -8,8 +8,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { loadCheck } from '@/controllers/onboarding.controller';
 import { Toaster } from 'sonner-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -24,8 +22,6 @@ const queryClient = new QueryClient()
 
 export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
-  const router = useRouter();
 
   const [fontsLoaded, fontError] = useFonts({
     'regular': require('@/assets/fonts/NoirPro-Regular.ttf'),
@@ -37,33 +33,16 @@ export default function RootLayout() {
 
   useEffect(() => {
     async function prepare() {
-      try {
-        const checked = await loadCheck();
-        if (checked) {
-          setShouldRedirect(true);
-        }
-      } catch (e) {
-        console.warn("Initialization Error:", e);
-      } finally {
-        setAppIsReady(true);
-      }
+      setAppIsReady(true);
     }
     prepare();
   }, []);
 
   useEffect(() => {
     if (appIsReady && (fontsLoaded || fontError)) {
-      if (shouldRedirect) {
-        const timer = setTimeout(() => {
-          router.replace('/share');
-          SplashScreen.hideAsync();
-        }, 1);
-        return () => clearTimeout(timer);
-      } else {
-        SplashScreen.hideAsync();
-      }
+      SplashScreen.hideAsync();
     }
-  }, [appIsReady, fontsLoaded, fontError, shouldRedirect]);
+  }, [appIsReady, fontsLoaded, fontError]);
 
   if (!appIsReady || (!fontsLoaded && !fontError)) {
     return null;

@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toast } from "sonner-native";
 
 const MEDIA_KEY = 'this_is_my_media_bro';
+export type StoredMediaUrl = MediaType & { id: string; createdAt: string };
 
 export const addUrl = async (newNumber: MediaType) => {
   try {
@@ -21,7 +22,7 @@ export const addUrl = async (newNumber: MediaType) => {
   }
 };
 
-export const getUrls = async () => {
+export const getUrls = async (): Promise<StoredMediaUrl[]> => {
   try {
     const urls = await AsyncStorage.getItem(MEDIA_KEY);
     return urls != null ? JSON.parse(urls) : [];
@@ -31,12 +32,12 @@ export const getUrls = async () => {
   }
 }
 
-export const getTelegramUrls = async () => {
+export const getTelegramUrls = async (): Promise<StoredMediaUrl[]> => {
   try {
     const data = await AsyncStorage.getItem(MEDIA_KEY);
     if (!data) return [];
 
-    const jsonUrls: MediaType[] = JSON.parse(data);
+    const jsonUrls: StoredMediaUrl[] = JSON.parse(data);
 
     return jsonUrls.filter(item => item.platform === 'telegram');
 
@@ -47,12 +48,12 @@ export const getTelegramUrls = async () => {
 }
 
 
-export const getTwitterUrls = async () => {
+export const getTwitterUrls = async (): Promise<StoredMediaUrl[]> => {
   try {
     const data = await AsyncStorage.getItem(MEDIA_KEY);
     if (!data) return [];
 
-    const jsonUrls: MediaType[] = JSON.parse(data);
+    const jsonUrls: StoredMediaUrl[] = JSON.parse(data);
 
     return jsonUrls.filter(item => item.platform === 'twitter');
 
@@ -67,7 +68,7 @@ export const deleteUrlById = async (id: string) => {
     const existingData = await AsyncStorage.getItem(MEDIA_KEY);
     if (!existingData) return;
 
-    const currentUrls: MediaType[] = JSON.parse(existingData);
+    const currentUrls: StoredMediaUrl[] = JSON.parse(existingData);
     const updatedUrls = currentUrls.filter(
       (item) => item.id !== id
     );
@@ -81,4 +82,3 @@ export const deleteUrlById = async (id: string) => {
     toast.error('Failed to delete');
   }
 };
-

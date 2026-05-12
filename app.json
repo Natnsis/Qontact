@@ -34,7 +34,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Qontact to use the camera to scan QR codes."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
