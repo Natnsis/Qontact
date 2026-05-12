@@ -1,12 +1,12 @@
-import { colors } from "@/constants/color";
-import { clearMyDevData } from "@/controllers/overall.controller";
+import { colors } from '@/constants/color';
+import { clearMyDevData } from '@/controllers/overall.controller';
 import { Feather } from '@expo/vector-icons';
-import { BarcodeScanningResult, CameraView, useCameraPermissions } from "expo-camera";
-import { useRef, useState } from "react";
-import { Linking, Text, View } from "react-native";
-import { toast } from "sonner-native";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
+import { useRef, useState } from 'react';
+import { Linking, ScrollView, Text, View } from 'react-native';
+import { toast } from 'sonner-native';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 import { parseQrPayload, ParsedQrData } from '@/lib/qr';
 import {
   AlertDialog,
@@ -28,13 +28,14 @@ const ScanOptions = () => {
   const [scanResult, setScanResult] = useState<ParsedQrData | null>(null);
   const isOpeningRef = useRef(false);
 
-  const handleBarcodeScanned = async ({ data }: BarcodeScanningResult) => {
-    if (!data || isOpeningRef.current) return;
+  const handleBarcodeScanned = async ({ data, raw }: BarcodeScanningResult) => {
+    const payload = raw?.trim().length && raw.trim() !== data.trim() ? raw.trim() : data;
+    if (!payload || isOpeningRef.current) return;
 
     isOpeningRef.current = true;
-    setLastScanned(data);
+    setLastScanned(payload);
 
-    const parsed = parseQrPayload(data);
+    const parsed = parseQrPayload(payload);
     setScanResult(parsed);
 
     if (parsed.kind === 'url' && parsed.actionUrl) {
@@ -53,7 +54,11 @@ const ScanOptions = () => {
       }
     }
 
-    toast.success(parsed.actionUrl ? 'Contact info detected — tap the action below.' : 'QR scanned. View decoded content below.');
+    toast.success(
+      parsed.actionUrl
+        ? 'Contact info detected — tap the action below.'
+        : 'QR scanned. View decoded content below.'
+    );
     setTimeout(() => {
       isOpeningRef.current = false;
     }, 1600);
@@ -61,7 +66,7 @@ const ScanOptions = () => {
 
   return (
     <View className="flex-1 px-3 pt-3">
-      <Badge variant='secondary'>
+      <Badge variant="secondary">
         <Text style={{ color: colors.light, fontFamily: 'regular' }} className="p-2">
           Scan QR codes inside Qontact when the default camera app cannot read them.
         </Text>
@@ -74,8 +79,7 @@ const ScanOptions = () => {
           borderWidth: 1,
           overflow: 'hidden',
         }}
-        className="relative mt-3 h-[420px] rounded-lg"
-      >
+        className="relative mt-3 h-[420px] rounded-lg">
         {!permission ? (
           <View className="flex-1 items-center justify-center px-6">
             <Text style={{ color: colors.light, fontFamily: 'regular' }}>
@@ -85,19 +89,11 @@ const ScanOptions = () => {
         ) : !permission.granted ? (
           <View className="flex-1 items-center justify-center gap-4 px-6">
             <Feather name="camera" color={colors.primary} size={42} />
-            <Text
-              style={{ color: colors.light, fontFamily: 'regular' }}
-              className="text-center"
-            >
+            <Text style={{ color: colors.light, fontFamily: 'regular' }} className="text-center">
               Camera permission is needed to scan QR codes.
             </Text>
-            <Button
-              onPress={requestPermission}
-              style={{ backgroundColor: colors.secondary }}
-            >
-              <Text style={{ color: colors.dark, fontFamily: 'regular' }}>
-                Allow camera
-              </Text>
+            <Button onPress={requestPermission} style={{ backgroundColor: colors.secondary }}>
+              <Text style={{ color: colors.dark, fontFamily: 'regular' }}>Allow camera</Text>
             </Button>
           </View>
         ) : (
@@ -122,10 +118,13 @@ const ScanOptions = () => {
             </View>
             <View
               style={{ backgroundColor: 'rgba(17,20,24,0.82)' }}
-              className="absolute bottom-0 left-0 right-0 px-3 py-3"
-            >
+              className="absolute bottom-0 left-0 right-0 px-3 py-3">
               <Text style={{ color: colors.light, fontFamily: 'light' }} numberOfLines={1}>
-                {scanResult ? scanResult.title : lastScanned ? `Last scan: ${lastScanned}` : 'Point the camera at a QR code'}
+                {scanResult
+                  ? scanResult.title
+                  : lastScanned
+                    ? `Last scan: ${lastScanned}`
+                    : 'Point the camera at a QR code'}
               </Text>
             </View>
           </>
@@ -139,9 +138,10 @@ const ScanOptions = () => {
             borderColor: colors.secondary,
             borderWidth: 1,
           }}
-          className="my-4 rounded-2xl p-4"
-        >
-          <Text style={{ color: colors.light, fontFamily: 'regular', fontSize: 16 }} className="mb-2">
+          className="my-4 rounded-2xl p-4">
+          <Text
+            style={{ color: colors.light, fontFamily: 'regular', fontSize: 16 }}
+            className="mb-2">
             {scanResult.title}
           </Text>
           <Text style={{ color: colors.light, fontFamily: 'light', fontSize: 13 }} className="mb-3">
@@ -168,8 +168,7 @@ const ScanOptions = () => {
                   toast.error('Action failed.');
                 }
               }}
-              style={{ backgroundColor: colors.secondary }}
-            >
+              style={{ backgroundColor: colors.secondary }}>
               <Text style={{ color: colors.dark, fontFamily: 'regular' }}>
                 {scanResult.actionLabel}
               </Text>
@@ -186,12 +185,9 @@ const ScanOptions = () => {
               borderColor: colors.secondary,
               backgroundColor: colors.dark,
             }}
-            className="flex-row items-center justify-center gap-2 rounded py-2"
-          >
+            className="flex-row items-center justify-center gap-2 rounded py-2">
             <Feather name="trash" color={colors.light} size={15} />
-            <Text style={{ color: colors.light, fontFamily: 'regular' }}>
-              Clear all data
-            </Text>
+            <Text style={{ color: colors.light, fontFamily: 'regular' }}>Clear all data</Text>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -199,7 +195,8 @@ const ScanOptions = () => {
                 Clear all saved data?
               </AlertDialogTitle>
               <AlertDialogDescription style={{ fontFamily: 'light' }}>
-                This will permanently delete your saved phone numbers and social links from this device.
+                This will permanently delete your saved phone numbers and social links from this
+                device.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="flex-row justify-between">
@@ -210,9 +207,12 @@ const ScanOptions = () => {
               </AlertDialogCancel>
               <AlertDialogAction
                 className="w-[45%]"
-                style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.dark }}
-                onPress={clearMyDevData}
-              >
+                style={{
+                  borderColor: colors.primary,
+                  borderWidth: 2,
+                  backgroundColor: colors.dark,
+                }}
+                onPress={clearMyDevData}>
                 <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Continue</Text>
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -233,13 +233,12 @@ const ScanOptions = () => {
             fontSize: 12,
             color: colors.secondary,
             textDecorationLine: 'underline',
-          }}
-        >
+          }}>
           Telegram
         </Text>
       </View>
     </View>
-  )
-}
+  );
+};
 
 export default ScanOptions;

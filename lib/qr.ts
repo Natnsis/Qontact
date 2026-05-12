@@ -1,5 +1,3 @@
-import { Linking } from "react-native";
-
 type QrKind = 'url' | 'vcard' | 'mecard' | 'tel' | 'sms' | 'email' | 'text';
 
 export type ParsedQrData = {
@@ -17,6 +15,38 @@ const normalize = (value: string) => value.trim();
 const safeValue = (value: string | undefined) => normalize(value || '');
 
 const cleanPhone = (value: string) => value.replace(/[^+0-9]/g, '');
+
+const tryDecodePayload = (value: string) => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
+const normalizePayload = (value: string) => {
+  const trimmed = value.trim();
+  if (/%0A|%0D|%5Cn|%5Cr|BEGIN%3AVCARD|MECARD%3A/i.test(trimmed)) {
+    return tryDecodePayload(trimmed);
+  }
+  return trimmed;
+};
+
+const makeContactFallback = (name: string, phone: string, raw: string): ParsedQrData => {
+  const cleaned = cleanPhone(phone);
+  return {
+    kind: 'vcard',
+    raw,
+    title: 'Contact QR detected',
+    description: 'This QR contains contact information.',
+    entries: [
+      { label: 'Name', value: name.trim() },
+      { label: 'Phone', value: cleaned },
+    ],
+    actionLabel: cleaned ? 'Call contact' : undefined,
+    actionUrl: cleaned ? `tel:${cleaned}` : undefined,
+  };
+};
 
 const makeUrlResult = (url: string): ParsedQrData => ({
   kind: 'url',
@@ -73,13 +103,22 @@ const makeEmailResult = (value: string): ParsedQrData => {
 };
 
 const parseVCard = (data: string): ParsedQrData | null => {
-  const lines = data
+  // Handle different line ending formats - split on actual newlines first
+  let lines = data
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
 
   if (!lines.some((line) => /^BEGIN:VCARD/i.test(line))) {
-    return null;
+    // Try escaped newlines if regular newlines didn't work
+    lines = data
+      .split(/\\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    if (!lines.some((line) => /^BEGIN:VCARD/i.test(line))) {
+      return null;
+    }
   }
 
   const entries: Array<{ label: string; value: string }> = [];
@@ -89,27 +128,32 @@ const parseVCard = (data: string): ParsedQrData | null => {
   let name = '';
 
   for (const line of lines) {
-    const [keyPart, ...rest] = line.split(':');
-    const key = keyPart.toLowerCase();
-    const value = rest.join(':').trim();
+    const colonIndex = line.indexOf(':');
+    if (colonIndex === -1) continue;
 
-    if (/^fn/i.test(key)) {
+    const keyPart = line.substring(0, colonIndex);
+    const value = line.substring(colonIndex + 1).trim();
+    const key = keyPart.split(';')[0].toLowerCase();
+
+    if ((!name && /^fn$/i.test(key)) || (/^n$/i.test(key) && !name)) {
       name = value;
       entries.push({ label: 'Name', value });
     }
 
-    if (/^tel/i.test(key)) {
+    if (/^tel$/i.test(key)) {
       const cleaned = cleanPhone(value);
-      phone = cleaned;
-      entries.push({ label: 'Phone', value: cleaned });
+      if (cleaned) {
+        phone = cleaned;
+        entries.push({ label: 'Phone', value: cleaned });
+      }
     }
 
-    if (/^email/i.test(key)) {
+    if (/^email$/i.test(key)) {
       email = value;
       entries.push({ label: 'Email', value });
     }
 
-    if (/^url/i.test(key)) {
+    if (/^url$/i.test(key)) {
       url = value;
       entries.push({ label: 'URL', value });
     }
@@ -122,13 +166,7 @@ const parseVCard = (data: string): ParsedQrData | null => {
     description: 'This QR contains a contact card (VCARD).',
     entries,
     actionLabel: phone ? 'Call contact' : email ? 'Email contact' : url ? 'Open link' : undefined,
-    actionUrl: phone
-      ? `tel:${phone}`
-      : email
-      ? `mailto:${email}`
-      : url
-      ? url
-      : undefined,
+    actionUrl: phone ? `tel:${phone}` : email ? `mailto:${email}` : url ? url : undefined,
   };
 };
 
@@ -172,13 +210,7 @@ const parseMecard = (data: string): ParsedQrData | null => {
     description: 'This QR contains a contact card (MECARD).',
     entries,
     actionLabel: phone ? 'Call contact' : email ? 'Email contact' : url ? 'Open link' : undefined,
-    actionUrl: phone
-      ? `tel:${phone}`
-      : email
-      ? `mailto:${email}`
-      : url
-      ? url
-      : undefined,
+    actionUrl: phone ? `tel:${phone}` : email ? `mailto:${email}` : url ? url : undefined,
   };
 };
 
@@ -191,33 +223,44 @@ const parseUrl = (data: string): ParsedQrData | null => {
   return makeUrlResult(finalUrl);
 };
 
+const parseNamePhoneFallback = (data: string): ParsedQrData | null => {
+  const match = data.match(/^(.+?)\s*\(\s*(\+?[0-9][0-9 ()-]*)\s*\)$/);
+  if (!match) return null;
+  return makeContactFallback(match[1], match[2], data);
+};
+
 const isPurePhone = (data: string): boolean => {
   const cleaned = cleanPhone(data);
   return /^\+?[0-9]{7,20}$/.test(cleaned);
 };
 
 export const parseQrPayload = (raw: string): ParsedQrData => {
-  const data = normalize(raw);
+  const data = normalizePayload(raw);
   const lower = data.toLowerCase();
 
-  if (/^begin:vcard/i.test(data)) {
-    return parseVCard(data) ?? {
-      kind: 'text',
-      raw: data,
-      title: 'Text received',
-      description: 'QR code content could not be parsed as structured contact data.',
-      entries: [{ label: 'Raw', value: data }],
-    };
+  if (/begin:vcard/i.test(data)) {
+    const result = parseVCard(data);
+    return (
+      result ?? {
+        kind: 'text',
+        raw: data,
+        title: 'Text received',
+        description: 'QR code content could not be parsed as structured contact data.',
+        entries: [{ label: 'Raw', value: data }],
+      }
+    );
   }
 
-  if (/^mecard:/i.test(data)) {
-    return parseMecard(data) ?? {
-      kind: 'text',
-      raw: data,
-      title: 'Text received',
-      description: 'QR code content could not be parsed as structured contact data.',
-      entries: [{ label: 'Raw', value: data }],
-    };
+  if (/mecard:/i.test(data)) {
+    return (
+      parseMecard(data) ?? {
+        kind: 'text',
+        raw: data,
+        title: 'Text received',
+        description: 'QR code content could not be parsed as structured contact data.',
+        entries: [{ label: 'Raw', value: data }],
+      }
+    );
   }
 
   if (/^tel:/i.test(data)) {
