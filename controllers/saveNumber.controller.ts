@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toast } from "sonner-native";
 
 const PHONE_NUMER_KEY = 'phone_number_here';
+export type StoredPhoneNumber = PhoneType & { id: string; createdAt: string };
 
 export const addNumber = async (newNumber: PhoneType) => {
   try {
@@ -21,7 +22,7 @@ export const addNumber = async (newNumber: PhoneType) => {
   }
 };
 
-export const getNumbers = async () => {
+export const getNumbers = async (): Promise<StoredPhoneNumber[]> => {
   try {
     const nums = await AsyncStorage.getItem(PHONE_NUMER_KEY);
     return nums != null ? JSON.parse(nums) : [];
@@ -36,7 +37,7 @@ export const deleteNumberById = async (id: string) => {
     const existingData = await AsyncStorage.getItem(PHONE_NUMER_KEY);
     if (!existingData) return;
 
-    const currentNumbers: PhoneType[] = JSON.parse(existingData);
+    const currentNumbers: StoredPhoneNumber[] = JSON.parse(existingData);
     const updatedNumbers = currentNumbers.filter(
       (item) => item.id !== id
     );

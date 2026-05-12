@@ -25,7 +25,11 @@ const SLIDES = [
     img: require('@/assets/images/onboarding3.png')
   },
 ];
-export function Onboarding() {
+type OnboardingProps = {
+  onDone?: () => void;
+}
+
+export function Onboarding({ onDone }: OnboardingProps) {
   const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
@@ -38,6 +42,10 @@ export function Onboarding() {
     try {
       const checked = await loadCheck()
       if (checked) {
+        if (onDone) {
+          onDone()
+          return;
+        }
         router.replace('/share');
       }
     } catch (error) {
@@ -49,6 +57,10 @@ export function Onboarding() {
     const isLastSlide = currentIndex === SLIDES.length - 1;
     if (isLastSlide) {
       await addCheck()
+      if (onDone) {
+        onDone()
+        return;
+      }
       router.replace('/share')
     } else {
       flatListRef.current?.scrollToIndex({

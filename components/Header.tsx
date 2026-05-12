@@ -1,62 +1,67 @@
-import { View, Text } from 'react-native'
-import { Button } from './ui/button'
-import { colors } from '@/constants/color'
-import { useRouter } from 'expo-router'
+import { Pressable, Text, View } from 'react-native';
+import { colors } from '@/constants/color';
+import { useRouter } from 'expo-router';
 
-const Header = ({ face }: { face: string }) => {
-  const router = useRouter()
+type TabFace = 'configure' | 'share' | 'scan' | 'hub';
+
+type HeaderProps = {
+  face: TabFace;
+  onChange?: (face: 'configure' | 'share' | 'scan') => void;
+};
+
+const tabs = [
+  { key: 'configure', label: 'Configure' },
+  { key: 'share', label: 'Share' },
+  { key: 'scan', label: 'Scan' },
+] as const;
+
+const Header = ({ face, onChange }: HeaderProps) => {
+  const router = useRouter();
+  const activeFace = face === 'hub' ? 'scan' : face;
 
   return (
-    <View className='flex-row justify-between px-2'>
-      <Button
-        style={face === 'configure' ? { backgroundColor: colors.background } : {}}
-        variant={face === 'configure' ? 'default' : 'ghost'}
-        onPress={() => router.replace('/configure')}
-        className='rounded-full'
-      >
-        <Text
-          style={{
-            fontFamily: 'regular',
-            color: colors.primary
-          }}
-        >
-          Configure
-        </Text>
-      </Button>
+    <View className="px-3 pt-3">
+      <View
+        style={{
+          backgroundColor: colors.background,
+          borderColor: colors.secondary,
+          borderWidth: 1,
+        }}
+        className="flex-row overflow-hidden rounded-2xl">
+        {tabs.map((tab, index) => {
+          const isActive = activeFace === tab.key;
 
-      <Button
-        style={face === 'share' ? { backgroundColor: colors.background } : {}}
-        variant={face === 'share' ? 'default' : 'ghost'}
-        onPress={() => router.replace('/share')}
-        className='rounded-full'
-      >
-        <Text
-          style={{
-            fontFamily: 'regular',
-            color: colors.primary
-          }}
-        >
-          Share
-        </Text>
-      </Button>
-
-      <Button
-        style={face === 'hub' ? { backgroundColor: colors.background } : {}}
-        variant={face === 'hub' ? 'default' : 'ghost'}
-        className='rounded-full'
-        onPress={() => router.replace('/hub')}
-      >
-        <Text
-          style={{
-            fontFamily: 'regular',
-            color: colors.primary
-          }}
-        >
-          Inner Hub
-        </Text>
-      </Button>
+          return (
+            <Pressable
+              key={tab.key}
+              onPress={() => {
+                if (onChange) {
+                  onChange(tab.key);
+                  return;
+                }
+                router.replace(tab.key === 'scan' ? '/hub' : `/${tab.key}`);
+              }}
+              style={{
+                flex: 1,
+                minHeight: 50,
+                backgroundColor: isActive ? colors.secondary : colors.background,
+                borderBottomWidth: 3,
+                borderBottomColor: isActive ? colors.primary : 'transparent',
+              }}
+              className={`items-center justify-center ${index !== tabs.length - 1 ? 'border-r border-secondary' : ''}`}>
+              <Text
+                style={{
+                  fontFamily: 'regular',
+                  color: colors.light,
+                }}>
+                {tab.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

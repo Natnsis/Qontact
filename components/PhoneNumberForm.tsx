@@ -7,7 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
-import { addNumber, deleteNumberById, getNumbers, wipeContacts } from "@/controllers/saveNumber.controller";
+import { addNumber, deleteNumberById, getNumbers } from "@/controllers/saveNumber.controller";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner-native";
 import {
@@ -18,6 +18,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
@@ -152,7 +153,7 @@ const PhoneNumberForm = () => {
       </View>
 
       <View className="mt-2">
-        <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center">
           <Text
             style={{
               color: colors.primary,
@@ -161,45 +162,6 @@ const PhoneNumberForm = () => {
             }}>
             Saved Numbers
           </Text>
-          <View className="px-2">
-            <AlertDialog>
-              <AlertDialogTrigger>
-                <Text
-                  style={{
-                    fontFamily: 'regular',
-                    color: colors.light
-                  }}
-                >
-                  Remove All
-                </Text>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogDescription style={{ fontFamily: 'light' }}>
-                    This action cannot be undone. This will permanently delete your contacts and remove
-                    your data from our servers.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="flex-row justify-between">
-                  <AlertDialogCancel
-                    style={{ borderColor: colors.primary, borderWidth: 2 }}
-                    className="w-[45%]">
-                    <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Cancel</Text>
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="w-[45%]"
-                    style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.dark }}
-                    onPress={() => {
-                      wipeContacts()
-                      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-                    }}
-                  >
-                    <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Continue</Text>
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </View>
         </View>
         {contactNumbers && contactNumbers.length !== 0 ?
           <View>
@@ -230,17 +192,41 @@ const PhoneNumberForm = () => {
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">
-                    <Button
-                      size='icon'
-                      variant='destructive'
-                      onPress={async () => {
-                        await deleteNumberById(c.id)
-                        queryClient.invalidateQueries({ queryKey: ['contacts'] });
-                      }
-                      }
-                    >
-                      <Feather name="trash" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        style={{ backgroundColor: '#ef4444' }}
+                        className="h-10 w-10 items-center justify-center rounded-md"
+                      >
+                        <Feather name="trash" color="white" />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle style={{ color: colors.primary, fontFamily: 'regular' }}>
+                            Delete this number?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription style={{ fontFamily: 'light' }}>
+                            This will remove {c.name}'s phone number from this device.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="flex-row justify-between">
+                          <AlertDialogCancel
+                            style={{ borderColor: colors.primary, borderWidth: 2 }}
+                            className="w-[45%]">
+                            <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Cancel</Text>
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="w-[45%]"
+                            style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.dark }}
+                            onPress={async () => {
+                              await deleteNumberById(c.id)
+                              queryClient.invalidateQueries({ queryKey: ['contacts'] });
+                            }}
+                          >
+                            <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Continue</Text>
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </View>
                 </View>
               </View>
