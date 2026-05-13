@@ -25,7 +25,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#111418"
-      }
+      },
+      "enableProguardInReleaseBuilds": true,        
+      "enableShrinkResourcesInReleaseBuilds": true   
     },
     "web": {
       "bundler": "metro",
