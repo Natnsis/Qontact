@@ -221,11 +221,24 @@ const parseMecard = (data: string): ParsedQrData | null => {
 
 const parseUrl = (data: string): ParsedQrData | null => {
   const normalized = data.trim();
-  const url = /^(https?:\/\/|www\.)/i.test(normalized) ? normalized : '';
-  if (!url) return null;
-
-  const finalUrl = /^www\./i.test(url) ? `https://${url}` : url;
-  return makeUrlResult(finalUrl);
+  
+  const urlWithProtocol = /^(https?:\/\/|www\.)/i.test(normalized) ? normalized : '';
+  if (urlWithProtocol) {
+    const finalUrl = /^www\./i.test(urlWithProtocol) ? `https://${urlWithProtocol}` : urlWithProtocol;
+    return makeUrlResult(finalUrl);
+  }
+  
+  const domainLikePattern = /^([a-zA-Z0-9][a-zA-Z0-9-]*\.)+[a-zA-Z]{2,}(\/|\?|$)/i;
+  if (domainLikePattern.test(normalized)) {
+    return makeUrlResult(`https://${normalized}`);
+  }
+  
+  const tldMatch = normalized.match(/^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}/i);
+  if (tldMatch && normalized.length > tldMatch[0].length + 2) {
+    return makeUrlResult(`https://${normalized}`);
+  }
+  
+  return null;
 };
 
 const parseNamePhoneFallback = (data: string): ParsedQrData | null => {
@@ -280,7 +293,10 @@ export const parseQrPayload = (raw: string): ParsedQrData => {
     return makeEmailResult(data);
   }
 
-  if (/^(https?:\/\/)|^(www\.)/i.test(data)) {
+  const urlWithProtocol = /^(https?:\/\/)|^(www\.)/i.test(data);
+  const domainLike = /^([a-zA-Z0-9][a-zA-Z0-9-]*\.)+[a-zA-Z]{2,}/i.test(data);
+  
+  if (urlWithProtocol || domainLike) {
     return parseUrl(data) as ParsedQrData;
   }
 

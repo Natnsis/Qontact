@@ -3,8 +3,8 @@ import { clearMyDevData } from '@/controllers/overall.controller';
 import { Feather } from '@expo/vector-icons';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
 import * as Contacts from 'expo-contacts';
-import { useRef, useState } from 'react';
-import { Linking, ScrollView, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Linking, ScrollView, Text, View, Platform } from 'react-native';
 import { toast } from 'sonner-native';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -27,7 +27,39 @@ const ScanOptions = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [lastScanned, setLastScanned] = useState<string | null>(null);
   const [scanResult, setScanResult] = useState<ParsedQrData | null>(null);
+  const [contactPermission, setContactPermission] = useState<'undetermined' | 'granted' | 'denied'>('undetermined');
   const isOpeningRef = useRef(false);
+
+  useEffect(() => {
+    const checkContactsPermission = async () => {
+      const { status } = await Contacts.getPermissionsAsync();
+      if (status === 'granted') {
+        setContactPermission('granted');
+      } else if (status === 'denied') {
+        setContactPermission('denied');
+      }
+    };
+    checkContactsPermission();
+  }, []);
+
+  const requestContactsPermission = async () => {
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status === 'granted') {
+      setContactPermission('granted');
+      return true;
+    } else if (status === 'denied') {
+      setContactPermission('denied');
+    }
+    return false;
+  };
+
+  const openAppSettings = () => {
+    if (Platform.OS === 'android') {
+      Linking.openSettings();
+    } else {
+      Linking.openURL('app-settings:');
+    }
+  };
 
   const handleBarcodeScanned = async ({ data, raw }: BarcodeScanningResult) => {
     const payload = raw?.trim().length && raw.trim() !== data.trim() ? raw.trim() : data;
@@ -162,10 +194,16 @@ const ScanOptions = () => {
               onPress={async () => {
                 try {
                   if (scanResult.contactPayload) {
-                    const { status } = await Contacts.requestPermissionsAsync();
-                    if (status !== 'granted') {
-                      toast.error('Contacts permission is required.');
+                    if (contactPermission === 'denied') {
+                      toast.error('Contacts permission denied. Please enable in settings.');
                       return;
+                    }
+                    if (contactPermission === 'undetermined') {
+                      const granted = await requestContactsPermission();
+                      if (!granted) {
+                        toast.error('Contacts permission is required.');
+                        return;
+                      }
                     }
                     const contact: Contacts.Contact = {
                       contactType: Contacts.ContactTypes.Person,
