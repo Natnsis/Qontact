@@ -1,10 +1,10 @@
-# 📇 Qontact  
+# 📇 Linksy  
 ### The "Anime-Style" Contact Sharing Mini-App
 
 > "Wait, how do I spell your name again?"  
 Never hear this again.
 
-Inspired by those slick contact-sharing scenes in anime, **Qontact** is a mini-app designed to make networking at gatherings, meetups, or parties instant and effortless.
+Inspired by those slick contact-sharing scenes in anime, **Linksy** is a mini-app designed to make networking at gatherings, meetups, or parties instant and effortless.
 
 ---
 
@@ -15,7 +15,7 @@ You meet someone awesome.
 
 Instead of fumbling with your phone or shouting your handle over loud music:
 
-1. Open **Qontact**
+1. Open **Linksy**
 2. They open their camera
 3. Scan  
 4. Done.
@@ -70,8 +70,8 @@ Want to explore the code or contribute?
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/Natnsis/Qontact.git
-cd Qontact
+git clone https://github.com/Natnsis/Linksy.git
+cd Linksy
 ```
 
 ### 2️⃣ Install Dependencies
@@ -97,4 +97,3 @@ Then run:
 ```bash
 npx react-native run-android
 ```
-

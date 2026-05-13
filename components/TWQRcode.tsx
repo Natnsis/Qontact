@@ -2,10 +2,11 @@ import { View, ActivityIndicator, Text } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useQuery } from '@tanstack/react-query';
 import { getTwitterUrls } from '@/controllers/saveUrl.controller';
-import { colors } from '@/constants/color';
+import { useAppColors } from '@/constants/color';
 const TWQRcode = ({ id }: { id: string }) => {
+  const colors = useAppColors();
   const { data: twitterUrls, isLoading } = useQuery({
-    queryKey: ['tgUrls'],
+    queryKey: ['twUrls'],
     queryFn: getTwitterUrls,
   });
 
@@ -21,7 +22,7 @@ const TWQRcode = ({ id }: { id: string }) => {
 
   return (
     <View className='flex-1 items-center justify-center p-4'>
-      <View className="bg-white rounded-xl shadow-md">
+      <View className="bg-white rounded-xl p-2 shadow-md">
         <QRCode
           value={qrValue}
           size={220}
@@ -33,7 +34,7 @@ const TWQRcode = ({ id }: { id: string }) => {
       {targetObject && (
         <Text
           style={{ fontFamily: 'light', color: colors.primary }}
-          className="text-white mt-1 font-bold">
+          className="mt-2 font-bold">
           {targetObject.name}
         </Text>
       )}

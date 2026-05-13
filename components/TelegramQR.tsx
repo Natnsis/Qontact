@@ -1,5 +1,5 @@
-import { colors } from '@/constants/color';
-import { View, Text, Dimensions, Pressable } from 'react-native';
+import { useAppColors } from '@/constants/color';
+import { View, Text, Pressable } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -8,89 +8,100 @@ import { useQuery } from "@tanstack/react-query";
 import { getTelegramUrls } from '@/controllers/saveUrl.controller';
 
 const TelegramQR = () => {
-  const { height } = Dimensions.get('screen');
-  const [hidden, setHidden] = useState(true);
+  const [showQr, setShowQr] = useState(false);
   const [selectedId, setSelectedId] = useState('')
+  const colors = useAppColors();
 
   const { data: telegramUrls } = useQuery({
     queryKey: ['tgUrls'],
     queryFn: getTelegramUrls,
   });
 
+  const selectedLink = telegramUrls?.find((item) => item.id === selectedId);
+
   return (
     <View>
       <View
-        className='rounded-lg p-2 mt-3'
-        style={{ height: height * 0.4, backgroundColor: colors.background }}>
-        <View className='flex-row justify-between'>
-          <Text style={{ color: colors.light, fontFamily: 'bold', fontSize: 16 }}>
-            Telegram QR
-          </Text>
-          <Button size='icon' onPress={() => setHidden(!hidden)} variant='ghost'>
-            <Feather name={hidden ? 'cast' : 'maximize'} color={colors.secondary} size={24} />
+        className='mt-3 rounded-lg border p-3'
+        style={{ minHeight: 310, backgroundColor: colors.surface, borderColor: colors.border }}>
+        <View className='flex-row items-start justify-between gap-3'>
+          <View className="flex-1">
+            <Text style={{ color: colors.text, fontFamily: 'bold', fontSize: 18 }}>Telegram QR</Text>
+            <Text style={{ color: colors.muted, fontFamily: 'light', marginTop: 2 }} numberOfLines={1}>
+              {selectedLink ? selectedLink.url : 'Select a Telegram profile below'}
+            </Text>
+          </View>
+          <Button
+            onPress={() => setShowQr(!showQr)}
+            disabled={!selectedId}
+            style={{ backgroundColor: selectedId ? colors.secondary : colors.border }}
+          >
+            <Feather name={showQr ? 'eye-off' : 'grid'} color={colors.background} size={16} />
+            <Text style={{ color: colors.background, fontFamily: 'regular' }}>
+              {showQr ? 'Hide QR' : 'Show QR'}
+            </Text>
           </Button>
         </View>
 
         <View className='flex-row p-2 justify-center items-center flex-1'>
-          {hidden ?
-            <View
-              style={{ backgroundColor: colors.primary }}
-              className='h-[80%] w-[80%] rounded-full flex-row items-center justify-center'
-            >
-              <View className='flex-col items-center justify-center'>
-                <Text style={{ fontFamily: 'bold' }}>Telegram URL:</Text>
-                <Text style={{ fontFamily: 'regular' }}>https://t.me/******</Text>
-                <Text style={{ fontFamily: 'light', fontSize: 12 }} className='px-5 text-center'>
-                  If you haven't configured, do before sharing
-                </Text>
-              </View>
-            </View>
-            :
+          {showQr && selectedId ? (
             <TQRcode id={selectedId} />
-          }
+          ) : (
+            <View
+              style={{ backgroundColor: colors.background, borderColor: colors.border }}
+              className='w-full items-center justify-center rounded-lg border border-dashed p-6'
+            >
+              <Feather name="send" color={colors.primary} size={38} />
+              <Text style={{ color: colors.text, fontFamily: 'bold', marginTop: 10 }}>
+                {selectedLink?.name ?? 'Telegram profile'}
+              </Text>
+              <Text style={{ color: colors.muted, fontFamily: 'light', fontSize: 12 }} className='mt-1 text-center'>
+                Choose a link, then tap Show QR.
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
-      <View className='mt-5 mb-2'>
-        <Text style={{ fontFamily: 'heavy', color: colors.light }}>Select which to share</Text>
+      <View className='mb-2 mt-5'>
+        <Text style={{ fontFamily: 'bold', color: colors.text }}>Select a Telegram link</Text>
       </View>
       {telegramUrls && telegramUrls.length > 0 ? (
-        telegramUrls.map((item) => (
-          <Pressable
-            key={item.id}
-            style={{ backgroundColor: colors.background }}
-            onPress={() => setSelectedId(item.id!)}
-            className={`p-3 rounded-lg mb-3 ${selectedId === item.id ? 'border border-dashed border-[#96dded]' : ''}`}
-          >
-            <View className="flex-row justify-between items-center">
-              <Text style={{ fontFamily: 'regular', color: colors.light }}>
-                {item.name}
+        telegramUrls.map((item) => {
+          const selected = selectedId === item.id;
+          return (
+            <Pressable
+              key={item.id}
+              style={{
+                backgroundColor: selected ? colors.primary : colors.surface,
+                borderColor: selected ? colors.primary : colors.border,
+                borderWidth: 1,
+              }}
+              onPress={() => {
+                setSelectedId(item.id!);
+                setShowQr(false);
+              }}
+              className='mb-3 rounded-lg p-3'
+            >
+              <View className="flex-row justify-between items-center">
+                <Text style={{ fontFamily: 'regular', color: selected ? colors.background : colors.text }}>
+                  {item.name}
+                </Text>
+                <Feather name="send" color={selected ? colors.background : colors.secondary} size={20} />
+              </View>
+
+              <Text numberOfLines={1} style={{ fontFamily: 'light', color: selected ? colors.background : colors.muted, marginTop: 6 }}>
+                {item.url}
               </Text>
-              <Feather name="send" color={colors.secondary} size={23} />
-            </View>
-
-            <View className="flex-row items-center justify-between mt-1 gap-2">
-              <View className="flex-1">
-                <Text
-                  numberOfLines={1}
-                  style={{ fontFamily: 'light', color: colors.primary }}
-                >
-                  {item.url}
-                </Text>
-              </View>
-
-              <View>
-                <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 10 }}>
-                  {item.createdAt}
-                </Text>
-              </View>
-            </View>
-          </Pressable>
-        ))
+            </Pressable>
+          );
+        })
       ) : (
-        <Text style={{ color: colors.secondary, textAlign: 'center', fontFamily: 'light' }}>
-          No Telegram URLs saved
-        </Text>
+        <View className="rounded-lg border border-dashed p-4" style={{ borderColor: colors.border }}>
+          <Text style={{ color: colors.muted, textAlign: 'center', fontFamily: 'light' }}>
+            No Telegram links saved yet.
+          </Text>
+        </View>
       )}
     </View>
   )

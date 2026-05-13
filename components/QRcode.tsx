@@ -2,9 +2,10 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useQuery } from '@tanstack/react-query';
 import { getNumbers } from '@/controllers/saveNumber.controller';
-import { colors } from '@/constants/color';
+import { useAppColors } from '@/constants/color';
 
 const QRcode = ({ id }: { id: string }) => {
+  const colors = useAppColors();
   const { data: contactNumbers, isLoading } = useQuery({
     queryKey: ['contacts'],
     queryFn: getNumbers,

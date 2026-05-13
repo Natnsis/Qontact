@@ -1,5 +1,5 @@
-import { colors } from '@/constants/color';
-import { View, Text, Dimensions, Pressable } from 'react-native';
+import { useAppColors } from '@/constants/color';
+import { View, Text, Pressable } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -8,90 +8,109 @@ import { useQuery } from '@tanstack/react-query';
 import { getNumbers } from '@/controllers/saveNumber.controller';
 
 const PhoneQr = () => {
-  const { height } = Dimensions.get('screen');
-  const [hidden, setHidden] = useState(true);
+  const [showQr, setShowQr] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
+  const colors = useAppColors();
 
   const { data: contactNumbers } = useQuery({
     queryKey: ['contacts'],
     queryFn: getNumbers,
   });
 
+  const selectedContact = contactNumbers?.find((item) => item.id === selectedOption);
+
   return (
     <View>
       <View
-        className='rounded-lg p-2 mt-3'
-        style={{ height: height * 0.4, backgroundColor: colors.background }}>
-        <View className='flex-row justify-between'>
-          <Text style={{ color: colors.light, fontFamily: 'bold', fontSize: 16 }}>Phone Qrcode</Text>
-          <Button size='icon' onPress={() => setHidden(!hidden)} variant='ghost'>
-            <Feather name={hidden ? 'cast' : 'maximize'} color={colors.secondary} size={24} />
+        className='mt-3 rounded-lg border p-3'
+        style={{ minHeight: 310, backgroundColor: colors.surface, borderColor: colors.border }}>
+        <View className='flex-row items-start justify-between gap-3'>
+          <View className="flex-1">
+            <Text style={{ color: colors.text, fontFamily: 'bold', fontSize: 18 }}>Phone QR</Text>
+            <Text style={{ color: colors.muted, fontFamily: 'light', marginTop: 2 }}>
+              {selectedContact ? selectedContact.name : 'Select a saved number below'}
+            </Text>
+          </View>
+          <Button
+            onPress={() => setShowQr(!showQr)}
+            disabled={!selectedOption}
+            style={{ backgroundColor: selectedOption ? colors.secondary : colors.border }}
+          >
+            <Feather name={showQr ? 'eye-off' : 'grid'} color={colors.background} size={16} />
+            <Text style={{ color: colors.background, fontFamily: 'regular' }}>
+              {showQr ? 'Hide QR' : 'Show QR'}
+            </Text>
           </Button>
         </View>
 
         <View className='flex-row p-2 justify-center items-center flex-1'>
-          {hidden ?
-            <View
-              style={{ backgroundColor: colors.primary }}
-              className='h-[80%] w-[80%] rounded-full flex-row items-center justify-center'
-            >
-              <View className='flex-col items-center justify-center'>
-                <Text style={{ fontFamily: 'bold' }}>Contact Info:</Text>
-                <Text style={{ fontFamily: 'regular' }}>+2519********</Text>
-                <Text style={{ fontFamily: 'light', fontSize: 12 }} className='px-5 text-center'>
-                  If you haven't configured, do before sharing
-                </Text>
-              </View>
-            </View>
-            :
+          {showQr && selectedOption ? (
             <QRcode id={selectedOption} />
-          }
+          ) : (
+            <View
+              style={{ backgroundColor: colors.background, borderColor: colors.border }}
+              className='w-full items-center justify-center rounded-lg border border-dashed p-6'
+            >
+              <Feather name="phone-call" color={colors.primary} size={36} />
+              <Text style={{ color: colors.text, fontFamily: 'bold', marginTop: 10 }}>
+                {selectedContact?.number ?? '+251 9xx xxx xxx'}
+              </Text>
+              <Text style={{ color: colors.muted, fontFamily: 'light', fontSize: 12 }} className='mt-1 text-center'>
+                Pick a number, then tap Show QR.
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
-      <View className='mt-5 mb-2'>
-        <Text style={{ fontFamily: 'heavy', color: colors.light }}>Select Numbers</Text>
+      <View className='mb-2 mt-5'>
+        <Text style={{ fontFamily: 'bold', color: colors.text }}>Select a number</Text>
       </View>
 
-      <View className="flex-row flex-wrap justify-between p-2">
-
-        {contactNumbers?.map((item) => (
-          <Pressable
-            key={item.id}
-            style={{
-              backgroundColor: colors.background,
-              width: '48%',
-            }}
-            onPress={() => setSelectedOption(item.id)}
-            className={`p-3 rounded-lg mb-3 ${selectedOption === item.id ? 'border border-dashed border-[#96dded]' : ''}`}
-          >
-            <View className='flex-row justify-between'>
-              <Text
-                numberOfLines={1}
-                style={{ fontFamily: 'regular', color: colors.light, flex: 1 }}
-              >
-                {item.name}
-              </Text>
-              <Feather
-                name={item.platform === 'twitter' ? 'twitter' : 'phone'}
-                color={colors.secondary}
-                size={18}
-              />
-            </View>
-
-            <View className='mt-2'>
-              <Text style={{ fontFamily: 'light', color: colors.primary, fontSize: 12 }}>
-                {item.number || item.url}
-              </Text>
-
-              <View className='flex-row items-center justify-between mt-2'>
-                <Text style={{ fontFamily: 'light', color: colors.light, fontSize: 10 }}>
-                  {item.createdAt}
+      <View className="flex-row flex-wrap justify-between">
+        {contactNumbers && contactNumbers.length > 0 ? contactNumbers.map((item) => {
+          const selected = selectedOption === item.id;
+          return (
+            <Pressable
+              key={item.id}
+              style={{
+                backgroundColor: selected ? colors.primary : colors.surface,
+                borderColor: selected ? colors.primary : colors.border,
+                borderWidth: 1,
+                width: '48%',
+              }}
+              onPress={() => {
+                setSelectedOption(item.id);
+                setShowQr(false);
+              }}
+              className='mb-3 rounded-lg p-3'
+            >
+              <View className='flex-row justify-between gap-2'>
+                <Text
+                  numberOfLines={1}
+                  style={{ fontFamily: 'regular', color: selected ? colors.background : colors.text, flex: 1 }}
+                >
+                  {item.name}
                 </Text>
+                <Feather
+                  name="phone"
+                  color={selected ? colors.background : colors.secondary}
+                  size={18}
+                />
               </View>
-            </View>
-          </Pressable>
-        ))}
+
+              <Text style={{ fontFamily: 'light', color: selected ? colors.background : colors.muted, fontSize: 12, marginTop: 8 }}>
+                {item.number}
+              </Text>
+            </Pressable>
+          );
+        }) : (
+          <View className="w-full rounded-lg border border-dashed p-4" style={{ borderColor: colors.border }}>
+            <Text style={{ color: colors.muted, textAlign: 'center', fontFamily: 'light' }}>
+              No phone numbers saved yet.
+            </Text>
+          </View>
+        )}
       </View>
     </View >
   )

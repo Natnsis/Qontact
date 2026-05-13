@@ -1,4 +1,4 @@
-package com.qontact.app
+package com.linksy.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

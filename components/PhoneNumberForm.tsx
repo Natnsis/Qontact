@@ -1,4 +1,4 @@
-import { colors } from "@/constants/color";
+import { useAppColors } from "@/constants/color";
 import { View, Text } from "react-native";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 const PhoneNumberForm = () => {
+  const colors = useAppColors();
   const { data: contactNumbers } = useQuery({
     queryKey: ['contacts'],
     queryFn: getNumbers,
@@ -71,22 +72,12 @@ const PhoneNumberForm = () => {
 
   return (
     <View>
-      <Text
-        style={{
-          color: colors.light,
-          fontFamily: 'regular',
-          fontSize: 20
-        }}
-      >
-        Phone number infos
-      </Text>
-
       <View className="mt-2 mx-2 p-2">
         <View className="mb-5">
           <Label
             style={{
-              color: colors.light,
-              fontFamily: 'light',
+              color: colors.muted,
+              fontFamily: 'regular',
               fontSize: 12
             }}
           >
@@ -100,8 +91,8 @@ const PhoneNumberForm = () => {
                 placeholder='john wick'
                 onChangeText={onChange}
                 value={value}
-                style={{ fontFamily: 'light' }}
-                className="border-[#96dded]" />
+                placeholderTextColor={colors.muted}
+                style={{ fontFamily: 'light', borderColor: colors.border, color: colors.text }} />
             )}
           />
           {errors.name &&
@@ -113,8 +104,8 @@ const PhoneNumberForm = () => {
         <View className="mb-5">
           <Label
             style={{
-              color: colors.light,
-              fontFamily: 'light',
+              color: colors.muted,
+              fontFamily: 'regular',
               fontSize: 12
             }}
           >
@@ -130,8 +121,8 @@ const PhoneNumberForm = () => {
                 onChangeText={onChange}
                 value={value}
                 keyboardType="numeric"
-                style={{ fontFamily: 'light' }}
-                className="border-[#96dded]" />
+                placeholderTextColor={colors.muted}
+                style={{ fontFamily: 'light', borderColor: colors.border, color: colors.text }} />
             )}
           />
           {errors.number &&
@@ -145,8 +136,9 @@ const PhoneNumberForm = () => {
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
             style={{ backgroundColor: colors.secondary }}>
-            <Text style={{ color: colors.dark, fontFamily: 'regular' }}>
-              Save
+            <Feather name="check" color={colors.background} size={16} />
+            <Text style={{ color: colors.background, fontFamily: 'regular' }}>
+              Save number
             </Text>
           </Button>
         </View>
@@ -170,16 +162,16 @@ const PhoneNumberForm = () => {
                 <View className="flex-row items-center gap-2">
                   <Feather
                     name='phone'
-                    color={colors.dark}
+                    color={colors.background}
                     style={{ backgroundColor: colors.secondary }}
                     className="p-2 rounded-full" />
                   <View>
                     <Text
-                      style={{ color: colors.light, fontFamily: 'regular' }}>
+                      style={{ color: colors.text, fontFamily: 'regular' }}>
                       {c.name}
                     </Text>
                     <Text
-                      style={{ color: colors.light, fontFamily: 'regular' }}>
+                      style={{ color: colors.muted, fontFamily: 'regular' }}>
                       {c.number}
                     </Text>
                   </View>
@@ -187,7 +179,7 @@ const PhoneNumberForm = () => {
                 <View className="flex-row gap-2 items-center justify-between">
                   <View>
                     <Text
-                      style={{ color: colors.light, fontFamily: 'light' }}>
+                      style={{ color: colors.muted, fontFamily: 'light' }}>
                       {c.createdAt}
                     </Text>
                   </View>
@@ -216,7 +208,7 @@ const PhoneNumberForm = () => {
                           </AlertDialogCancel>
                           <AlertDialogAction
                             className="w-[45%]"
-                            style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.dark }}
+                            style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.background }}
                             onPress={async () => {
                               await deleteNumberById(c.id)
                               queryClient.invalidateQueries({ queryKey: ['contacts'] });

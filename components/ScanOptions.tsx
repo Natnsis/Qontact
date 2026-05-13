@@ -1,4 +1,4 @@
-import { colors } from '@/constants/color';
+import { useAppColors } from '@/constants/color';
 import { clearMyDevData } from '@/controllers/overall.controller';
 import { Feather } from '@expo/vector-icons';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
@@ -21,9 +21,10 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-const TELEGRAM_URL = 'https://t.me/your_link';
+const TELEGRAM_URL = 'https://t.me/bugpusher';
 
 const ScanOptions = () => {
+  const colors = useAppColors();
   const [permission, requestPermission] = useCameraPermissions();
   const [lastScanned, setLastScanned] = useState<string | null>(null);
   const [scanResult, setScanResult] = useState<ParsedQrData | null>(null);
@@ -103,7 +104,7 @@ const ScanOptions = () => {
       contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 12, paddingTop: 12 }}>
       <Badge variant="secondary">
         <Text style={{ color: colors.light, fontFamily: 'regular' }} className="p-2">
-          Scan QR codes inside Qontact when the default camera app cannot read them.
+          Scan QR codes inside Linksy when the default camera app cannot read them.
         </Text>
       </Badge>
 
@@ -194,16 +195,10 @@ const ScanOptions = () => {
               onPress={async () => {
                 try {
                   if (scanResult.contactPayload) {
-                    if (contactPermission === 'denied') {
-                      toast.error('Contacts permission denied. Please enable in settings.');
+                    const granted = await requestContactsPermission();
+                    if (!granted) {
+                      toast.error('Permission denied. Please allow contacts access in settings.');
                       return;
-                    }
-                    if (contactPermission === 'undetermined') {
-                      const granted = await requestContactsPermission();
-                      if (!granted) {
-                        toast.error('Contacts permission is required.');
-                        return;
-                      }
                     }
                     const contact: Contacts.Contact = {
                       contactType: Contacts.ContactTypes.Person,

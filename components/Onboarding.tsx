@@ -1,4 +1,4 @@
-import { colors } from '@/constants/color';
+import { useAppColors } from '@/constants/color';
 import { FlatList, View, Dimensions, Text, Image } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,7 @@ type OnboardingProps = {
 }
 
 export function Onboarding({ onDone }: OnboardingProps) {
+  const colors = useAppColors();
   const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
@@ -85,7 +86,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
       ref={flatListRef}
       renderItem={({ item }) => (
         <View
-          style={{ width, height, backgroundColor: colors.dark }}
+          style={{ width, height, backgroundColor: colors.background }}
           className='px-2'
         >
           <View
@@ -104,7 +105,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
               <View
                 key={index}
                 style={{
-                  backgroundColor: index <= currentIndex ? colors.secondary : colors.light,
+                  backgroundColor: index <= currentIndex ? colors.secondary : colors.border,
                   width: index <= currentIndex ? 24 : 8,
                   height: 4,
                   borderRadius: 2
@@ -114,7 +115,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
           </View>
 
           <Text
-            style={{ fontFamily: 'regular', color: colors.light, fontSize: 32 }}>
+            style={{ fontFamily: 'regular', color: colors.text, fontSize: 32 }}>
             {item.text}
           </Text>
           <View
@@ -122,7 +123,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
             <Button
               onPress={handlePress}
               style={{
-                backgroundColor: colors.dark,
+                backgroundColor: colors.surface,
                 width: 100,
                 height: 100,
                 borderWidth: 1,

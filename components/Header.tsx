@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { colors } from '@/constants/color';
+import { useAppColors } from '@/constants/color';
 import { useRouter } from 'expo-router';
 
 type TabFace = 'configure' | 'share' | 'scan' | 'hub';
@@ -18,16 +18,17 @@ const tabs = [
 const Header = ({ face, onChange }: HeaderProps) => {
   const router = useRouter();
   const activeFace = face === 'hub' ? 'scan' : face;
+  const colors = useAppColors();
 
   return (
     <View className="px-3 pt-3">
       <View
         style={{
-          backgroundColor: colors.background,
-          borderColor: colors.secondary,
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
           borderWidth: 1,
         }}
-        className="flex-row overflow-hidden rounded-2xl">
+        className="flex-row overflow-hidden rounded-lg">
         {tabs.map((tab, index) => {
           const isActive = activeFace === tab.key;
 
@@ -44,15 +45,15 @@ const Header = ({ face, onChange }: HeaderProps) => {
               style={{
                 flex: 1,
                 minHeight: 50,
-                backgroundColor: isActive ? colors.secondary : colors.background,
+                backgroundColor: isActive ? colors.primary : colors.surface,
                 borderBottomWidth: 3,
-                borderBottomColor: isActive ? colors.primary : 'transparent',
+                borderBottomColor: isActive ? colors.accent : 'transparent',
               }}
-              className={`items-center justify-center ${index !== tabs.length - 1 ? 'border-r border-secondary' : ''}`}>
+              className="items-center justify-center">
               <Text
                 style={{
                   fontFamily: 'regular',
-                  color: colors.light,
+                  color: isActive ? colors.background : colors.text,
                 }}>
                 {tab.label}
               </Text>

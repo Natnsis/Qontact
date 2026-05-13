@@ -4,10 +4,11 @@ import { loadCheck } from "@/controllers/onboarding.controller"
 import { useEffect, useState } from "react"
 import { ActivityIndicator } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { colors } from "@/constants/color"
+import { useAppColors } from "@/constants/color"
 
 const index = () => {
   const [checkedOnboarding, setCheckedOnboarding] = useState<boolean | null>(null);
+  const colors = useAppColors();
 
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -21,7 +22,7 @@ const index = () => {
   if (checkedOnboarding === null) {
     return (
       <SafeAreaView
-        style={{ backgroundColor: colors.dark, flex: 1 }}
+        style={{ backgroundColor: colors.background, flex: 1 }}
         className="items-center justify-center"
       >
         <ActivityIndicator color={colors.primary} />
@@ -34,7 +35,7 @@ const index = () => {
   }
 
   return (
-    <SafeAreaView className="flex-col" style={{ backgroundColor: colors.dark, flex: 1 }}>
+    <SafeAreaView className="flex-col" style={{ backgroundColor: colors.background, flex: 1 }}>
       <Onboarding onDone={() => setCheckedOnboarding(true)} />
     </SafeAreaView>
   )

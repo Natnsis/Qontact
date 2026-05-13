@@ -1,4 +1,4 @@
-import { colors } from "@/constants/color";
+import { useAppColors } from "@/constants/color";
 import { View, Text, ScrollView } from "react-native";
 import { Button } from "./ui/button";
 import { Feather } from '@expo/vector-icons';
@@ -8,49 +8,49 @@ import SocialMediaForm from "./SocialMediaForm";
 
 const ConfigureOption = () => {
   const [config, setConfig] = useState('phone');
+  const colors = useAppColors();
+
+  const options = [
+    { key: 'phone', title: 'Phone', icon: 'phone' },
+    { key: 'media', title: 'Social', icon: 'at-sign' },
+  ] as const;
+
   return (
     <View className="flex-1">
-      <ScrollView className="mt-2 px-2">
-        {/*toggles*/}
-        <View className="flex-row items-center gap-2">
-          <Button
-            className={`flex-row items-center gap-2 ${config === 'media' ? '' : 'border-secondary'}`}
-            variant={config === 'phone' ? 'default' : 'outline'}
-            onPress={() => setConfig('phone')}
-          >
-            <Feather
-              name="phone"
-              size={18}
-              color={config === 'phone' ? '#111418' : colors.secondary}
-            />
-            <Text
-              style={{ fontFamily: 'bold' }}
-              className={config === 'phone' ? 'text-[#111418]' : 'text-[#96dded]'}
-            >
-              Phone No.s
-            </Text>
-          </Button>
-
-          <Button
-            className={`flex-row items-center gap-2 ${config === 'media' ? '' : 'border-secondary'}`}
-            variant={config === 'media' ? 'default' : 'outline'}
-            onPress={() => setConfig('media')}
-          >
-            <Feather
-              name="codesandbox"
-              size={18}
-              color={config === 'media' ? '#111418' : colors.secondary}
-            />
-            <Text
-              style={{ fontFamily: 'bold' }}
-              className={config === 'media' ? 'text-[#111418]' : 'text-[#96dded]'}
-            >
-              Social Medias
-            </Text>
-          </Button>
+      <ScrollView
+        className="px-4"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24, paddingTop: 12 }}>
+        <View className="mb-4 flex-row gap-2">
+          {options.map((item) => {
+            const selected = config === item.key;
+            return (
+              <Button
+                key={item.key}
+                className="h-12 flex-1 flex-row rounded-lg border"
+                variant="outline"
+                onPress={() => setConfig(item.key)}
+                style={{
+                  backgroundColor: selected ? colors.primary : colors.surface,
+                  borderColor: selected ? colors.primary : colors.border,
+                }}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Feather
+                    name={item.icon}
+                    size={18}
+                    color={selected ? colors.background : colors.secondary}
+                  />
+                  <Text style={{ color: selected ? colors.background : colors.text, fontFamily: 'bold' }}>
+                    {item.title}
+                  </Text>
+                </View>
+              </Button>
+            );
+          })}
         </View>
 
-        <View className="mt-5">
+        <View>
           {config === 'phone'
             ?
             <PhoneNumberForm />

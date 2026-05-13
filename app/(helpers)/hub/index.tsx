@@ -1,11 +1,12 @@
 import Header from "@/components/Header"
 import ScanOptions from "@/components/ScanOptions"
-import { colors } from "@/constants/color"
+import { useAppColors } from "@/constants/color"
 import { SafeAreaView } from "react-native-safe-area-context"
 const index = () => {
+  const colors = useAppColors();
   return (
     <SafeAreaView style={{
-      backgroundColor: colors.dark,
+      backgroundColor: colors.background,
       flex: 1
     }}>
       <Header face="hub" />

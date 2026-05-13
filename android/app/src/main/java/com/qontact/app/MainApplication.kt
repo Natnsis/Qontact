@@ -1,4 +1,4 @@
-package com.qontact.app
+package com.linksy.app
 
 import android.app.Application
 import android.content.res.Configuration
