@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Linksy",
-    "slug": "linksy",
+    "slug": "qontact",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,7 @@
     "backgroundColor": "#F7FAF9",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#F7FAF9"
     },
@@ -19,15 +19,16 @@
     ],
     "android": {
       "package": "com.linksy.app",
-      "versionCode": 1,
       "edgeToEdgeEnabled": true,
       "backgroundColor": "#F7FAF9",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#F7FAF9"
       },
-      "enableProguardInReleaseBuilds": true,        
-      "enableShrinkResourcesInReleaseBuilds": true   
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -52,6 +53,9 @@
       "eas": {
         "projectId": "611184f4-07cd-476d-a009-eac5b3da865a"
       }
+    },
+    "ios": {
+      "bundleIdentifier": "com.linksy.app"
     }
   }
 }
