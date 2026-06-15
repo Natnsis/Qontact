@@ -27,11 +27,12 @@ export default function RootLayout() {
   const palette = palettes[colorScheme];
 
   const [fontsLoaded, fontError] = useFonts({
-    'regular': require('@/assets/fonts/NoirPro-Regular.ttf'),
-    'light': require('@/assets/fonts/NoirPro-Light.ttf'),
-    'Medium': require('@/assets/fonts/NoirPro-Medium.ttf'),
-    'bold': require('@/assets/fonts/NoirPro-Bold.ttf'),
-    'heavy': require('@/assets/fonts/NoirPro-Heavy.ttf'),
+    'regular': require('@/assets/fonts/Manrope.ttf'),
+    'light': require('@/assets/fonts/Manrope.ttf'),
+    'Medium': require('@/assets/fonts/Manrope.ttf'),
+    'bold': require('@/assets/fonts/Manrope.ttf'),
+    'heavy': require('@/assets/fonts/Manrope.ttf'),
+    'Manrope': require('@/assets/fonts/Manrope.ttf'),
   });
 
   useEffect(() => {

@@ -2,30 +2,30 @@ import { useColorScheme } from 'react-native';
 
 export const palettes = {
   light: {
-    background: '#F7FAF9',
-    surface: '#FFFFFF',
-    primary: '#3BBFA3',
-    primaryHover: '#2FA58C',
-    secondary: '#6C7CF0',
-    accent: '#FFD9A0',
-    text: '#1E293B',
-    muted: '#64748B',
-    border: '#E2E8F0',
-    dark: '#F7FAF9',
-    light: '#1E293B',
+    background: '#F2EFEA', // cream
+    surface: '#F2EFEA',
+    primary: '#82B090', // sage green
+    primaryHover: '#6E9D7C',
+    secondary: '#D0E4D7', // lighter sage tint
+    accent: '#82B090',
+    text: '#41393C', // brown
+    muted: '#7A6E71',
+    border: '#D5D0CA',
+    dark: '#F2EFEA',
+    light: '#41393C',
   },
   dark: {
-    background: '#0F172A',
-    surface: '#162033',
-    primary: '#52D6BA',
-    primaryHover: '#42C2A7',
-    secondary: '#8C9BFF',
-    accent: '#FFC97A',
-    text: '#F8FAFC',
-    muted: '#94A3B8',
-    border: '#243247',
-    dark: '#0F172A',
-    light: '#F8FAFC',
+    background: '#41393C', // brown
+    surface: '#4E4449',
+    primary: '#82B090', // sage stays the same
+    primaryHover: '#9AC4A8',
+    secondary: '#5E4F53',
+    accent: '#82B090',
+    text: '#F2EFEA', // cream
+    muted: '#B8AFA5',
+    border: '#5E4F53',
+    dark: '#41393C',
+    light: '#F2EFEA',
   },
 } as const;
 
