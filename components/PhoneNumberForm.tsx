@@ -186,7 +186,7 @@ const PhoneNumberForm = () => {
                   <View className="flex-row items-center gap-2">
                     <AlertDialog>
                       <AlertDialogTrigger
-                        style={{ backgroundColor: '#ef4444' }}
+                        style={{ backgroundColor: colors.destructive }}
                         className="h-10 w-10 items-center justify-center rounded-md"
                       >
                         <Feather name="trash" color="white" />

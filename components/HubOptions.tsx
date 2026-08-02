@@ -1,4 +1,4 @@
-import { colors } from "@/constants/color";
+import { useAppColors } from "@/constants/color";
 import { View, Text, Linking } from "react-native";
 import { Button } from "./ui/button";
 import { Feather } from '@expo/vector-icons';
@@ -16,6 +16,8 @@ import {
 import { clearMyDevData } from "@/controllers/overall.controller";
 
 const HubOptions = () => {
+  const colors = useAppColors();
+
   return (
     <View className="px-2 h-full flex-1 gap-2">
       <View className="mt-2">

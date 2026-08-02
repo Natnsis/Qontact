@@ -2,30 +2,32 @@ import { useColorScheme } from 'react-native';
 
 export const palettes = {
   light: {
-    background: '#F2EFEA', // cream
-    surface: '#F2EFEA',
-    primary: '#82B090', // sage green
-    primaryHover: '#6E9D7C',
-    secondary: '#D0E4D7', // lighter sage tint
-    accent: '#82B090',
-    text: '#41393C', // brown
-    muted: '#7A6E71',
-    border: '#D5D0CA',
-    dark: '#F2EFEA',
-    light: '#41393C',
+    background: '#EEF0F3', // cool neutral
+    surface: '#FFFFFF',
+    primary: '#834965', // mauve
+    primaryHover: '#693A51',
+    secondary: '#61904C', // green
+    accent: '#ECDCE3',
+    text: '#181B21',
+    muted: '#5A6072',
+    border: '#C9CFD8',
+    destructive: '#B8332E',
+    dark: '#EEF0F3',
+    light: '#181B21',
   },
   dark: {
-    background: '#41393C', // brown
-    surface: '#4E4449',
-    primary: '#82B090', // sage stays the same
-    primaryHover: '#9AC4A8',
-    secondary: '#5E4F53',
-    accent: '#82B090',
-    text: '#F2EFEA', // cream
-    muted: '#B8AFA5',
-    border: '#5E4F53',
-    dark: '#41393C',
-    light: '#F2EFEA',
+    background: '#14171C',
+    surface: '#1C2027',
+    primary: '#AE7891', // mauve, lightened for dark
+    primaryHover: '#BD91A6',
+    secondary: '#79AC70',
+    accent: '#39252F',
+    text: '#E6E9EF',
+    muted: '#9097A6',
+    border: '#353C48',
+    destructive: '#D4524C',
+    dark: '#14171C',
+    light: '#E6E9EF',
   },
 } as const;
 
@@ -34,10 +36,4 @@ export type AppPalette = typeof palettes.light;
 export const useAppColors = () => {
   const scheme = useColorScheme();
   return scheme === 'dark' ? palettes.dark : palettes.light;
-};
-
-export const colors = {
-  ...palettes.dark,
-  dark: palettes.dark.background,
-  light: palettes.dark.text,
 };

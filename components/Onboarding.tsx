@@ -78,6 +78,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
       pagingEnabled
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item) => item.id}
+      getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
       onScroll={(event) => {
         const scrollOffset = event.nativeEvent.contentOffset.x;
         const index = Math.round(scrollOffset / width);
@@ -96,7 +97,8 @@ export function Onboarding({ onDone }: OnboardingProps) {
             <Image
               alt='onboarding-img'
               source={item.img}
-              className="w-[90%] h-[90%] rounded-full"
+              resizeMode="cover"
+              style={{ width: '90%', height: '90%', borderRadius: 9999 }}
             />
           </View>
 
