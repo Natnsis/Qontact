@@ -1,10 +1,11 @@
 import { useAppColors } from '@/constants/color';
-import { FlatList, View, Dimensions, Text, Image } from 'react-native';
+import { FlatList, View, Dimensions, Text, Image, Pressable } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { addCheck, loadCheck } from '@/controllers/onboarding.controller';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -54,15 +55,20 @@ export function Onboarding({ onDone }: OnboardingProps) {
     }
   }
 
+  const isLastSlide = currentIndex === SLIDES.length - 1;
+
+  const finish = async () => {
+    await addCheck()
+    if (onDone) {
+      onDone()
+      return;
+    }
+    router.replace('/share')
+  };
+
   const handlePress = async () => {
-    const isLastSlide = currentIndex === SLIDES.length - 1;
     if (isLastSlide) {
-      await addCheck()
-      if (onDone) {
-        onDone()
-        return;
-      }
-      router.replace('/share')
+      await finish();
     } else {
       flatListRef.current?.scrollToIndex({
         index: currentIndex + 1,
@@ -86,13 +92,13 @@ export function Onboarding({ onDone }: OnboardingProps) {
       }}
       ref={flatListRef}
       renderItem={({ item }) => (
-        <View
+        <SafeAreaView
           style={{ width, height, backgroundColor: colors.background }}
-          className='px-2'
+          className='px-6'
         >
           <View
-            style={{ height: height * 0.6 }}
-            className='flex items-center justify-center'
+            style={{ height: height * 0.5 }}
+            className='items-center justify-center'
           >
             <Image
               alt='onboarding-img'
@@ -116,29 +122,43 @@ export function Onboarding({ onDone }: OnboardingProps) {
             ))}
           </View>
 
-          <Text
-            style={{ fontFamily: 'regular', color: colors.text, fontSize: 32 }}>
-            {item.text}
-          </Text>
-          <View
-            className="flex-row justify-end items-end">
+          {/* Fixed-height flex region: text of any length centers here so the
+              footer below never shifts position between slides. */}
+          <View className='flex-1 justify-center'>
+            <Text
+              style={{ fontFamily: 'regular', color: colors.text, fontSize: 28, lineHeight: 36 }}>
+              {item.text}
+            </Text>
+          </View>
+
+          <View className='flex-row items-center justify-between pb-4'>
+            {isLastSlide ? (
+              <View />
+            ) : (
+              <Pressable onPress={finish} hitSlop={12}>
+                <Text style={{ fontFamily: 'regular', color: colors.text, fontSize: 16, opacity: 0.6 }}>
+                  Skip
+                </Text>
+              </Pressable>
+            )}
+
             <Button
               onPress={handlePress}
               style={{
                 backgroundColor: colors.surface,
-                width: 100,
-                height: 100,
+                width: 72,
+                height: 72,
                 borderWidth: 1,
                 borderColor: colors.primary
               }}
               className='rounded-full'
             >
-              {currentIndex === SLIDES.length - 1 ?
-                <Feather name="cpu" size={50} color={colors.primary} /> :
-                <Feather name="arrow-right" size={50} color={colors.primary} />}
+              {isLastSlide ?
+                <Feather name="cpu" size={32} color={colors.primary} /> :
+                <Feather name="arrow-right" size={32} color={colors.primary} />}
             </ Button>
           </View>
-        </View >
+        </SafeAreaView>
       )
       }
     />
