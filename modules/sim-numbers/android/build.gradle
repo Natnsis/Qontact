@@ -1,0 +1,15 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.linksy.app'
+version = '1.0.0'
+
+android {
+  namespace "expo.modules.simnumbers"
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+}

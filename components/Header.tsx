@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { useAppColors } from '@/constants/color';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 
 type TabFace = 'configure' | 'share' | 'scan' | 'hub';
 
@@ -10,9 +11,9 @@ type HeaderProps = {
 };
 
 const tabs = [
-  { key: 'configure', label: 'Configure' },
-  { key: 'share', label: 'Share' },
-  { key: 'scan', label: 'Scan' },
+  { key: 'configure', label: 'Configure', icon: 'sliders' },
+  { key: 'share', label: 'Share', icon: 'share-2' },
+  { key: 'scan', label: 'Scan', icon: 'maximize' },
 ] as const;
 
 const Header = ({ face, onChange }: HeaderProps) => {
@@ -21,46 +22,47 @@ const Header = ({ face, onChange }: HeaderProps) => {
   const colors = useAppColors();
 
   return (
-    <View className="px-3 pt-3">
-      <View
-        style={{
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-          borderWidth: 1,
-        }}
-        className="flex-row overflow-hidden rounded-lg">
-        {tabs.map((tab, index) => {
-          const isActive = activeFace === tab.key;
+    <View
+      style={{
+        backgroundColor: colors.surface,
+        borderTopColor: colors.border,
+        borderTopWidth: 1,
+      }}
+      className="flex-row gap-2 px-3 pb-2 pt-2">
+      {tabs.map((tab) => {
+        const isActive = activeFace === tab.key;
 
-          return (
-            <Pressable
-              key={tab.key}
-              onPress={() => {
-                if (onChange) {
-                  onChange(tab.key);
-                  return;
-                }
-                router.replace(tab.key === 'scan' ? '/hub' : `/${tab.key}`);
-              }}
+        return (
+          <Pressable
+            key={tab.key}
+            onPress={() => {
+              if (onChange) {
+                onChange(tab.key);
+                return;
+              }
+              router.replace(tab.key === 'scan' ? '/hub' : `/${tab.key}`);
+            }}
+            style={{
+              flex: 1,
+              backgroundColor: isActive ? colors.primary : 'transparent',
+            }}
+            className="items-center justify-center gap-1 rounded-xl py-2">
+            <Feather
+              name={tab.icon}
+              size={20}
+              color={isActive ? colors.background : colors.muted}
+            />
+            <Text
               style={{
-                flex: 1,
-                minHeight: 50,
-                backgroundColor: isActive ? colors.primary : colors.surface,
-                borderBottomWidth: 3,
-                borderBottomColor: isActive ? colors.accent : 'transparent',
-              }}
-              className="items-center justify-center">
-              <Text
-                style={{
-                  fontFamily: 'regular',
-                  color: isActive ? colors.background : colors.text,
-                }}>
-                {tab.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+                fontFamily: isActive ? 'bold' : 'regular',
+                fontSize: 12,
+                color: isActive ? colors.background : colors.muted,
+              }}>
+              {tab.label}
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 };

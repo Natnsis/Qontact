@@ -1,5 +1,5 @@
 import { useAppColors } from "@/constants/color";
-import { View, Text } from "react-native";
+import { View, Text, Platform, PermissionsAndroid } from "react-native";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
@@ -10,6 +10,8 @@ import { PhoneSchema, PhoneType } from "@/schema/phone.schema";
 import { addNumber, deleteNumberById, getNumbers } from "@/controllers/saveNumber.controller";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner-native";
+import { useState } from "react";
+import { getSimNumbers, SimNumberInfo } from "sim-numbers";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +32,9 @@ const PhoneNumberForm = () => {
   });
 
   const queryClient = useQueryClient();
+  const [fetchingSim, setFetchingSim] = useState(false);
+  const [simOptions, setSimOptions] = useState<SimNumberInfo[]>([]);
+  const [showSimPicker, setShowSimPicker] = useState(false);
 
   const getFormattedDate = () => {
     const now = new Date();
@@ -44,13 +49,58 @@ const PhoneNumberForm = () => {
     }).format(now);
   };
 
-  const { handleSubmit, reset, formState: { errors, isSubmitting }, control } = useForm<PhoneType>({
+  const { handleSubmit, reset, setValue, formState: { errors, isSubmitting }, control } = useForm<PhoneType>({
     resolver: zodResolver(PhoneSchema),
     defaultValues: {
       number: '',
       name: '',
     }
   });
+
+  const handleGetFromPhone = async () => {
+    if (Platform.OS !== 'android' || fetchingSim) return;
+
+    setFetchingSim(true);
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_PHONE_NUMBERS,
+        {
+          title: 'Phone number access',
+          message: 'Linksy needs access to your phone number to fill it in automatically.',
+          buttonPositive: 'Allow',
+        }
+      );
+
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        toast.error('Permission denied. Please allow phone access in settings.');
+        return;
+      }
+
+      const numbers = await getSimNumbers();
+
+      if (numbers.length === 0) {
+        toast.error("Couldn't detect a number on this device — enter it manually.");
+        return;
+      }
+
+      if (numbers.length === 1) {
+        if (!numbers[0].number) {
+          toast.error("Couldn't detect a number on this device — enter it manually.");
+          return;
+        }
+        setValue('number', numbers[0].number, { shouldValidate: true });
+        toast.success('Number filled in from your SIM.');
+        return;
+      }
+
+      setSimOptions(numbers);
+      setShowSimPicker(true);
+    } catch (error) {
+      toast.error('Could not read phone number.');
+    } finally {
+      setFetchingSim(false);
+    }
+  };
 
   const onSubmit = async (data: PhoneType) => {
     try {
@@ -131,7 +181,20 @@ const PhoneNumberForm = () => {
             </Text>}
         </View>
 
-        <View className="flex-row justify-end">
+        <View className={Platform.OS === 'android' ? 'flex-row justify-between' : 'flex-row justify-end'}>
+          {Platform.OS === 'android' ? (
+            <Button
+              onPress={handleGetFromPhone}
+              disabled={fetchingSim}
+              variant="outline"
+              style={{ borderColor: colors.primary, backgroundColor: colors.surface }}>
+              <Feather name="smartphone" color={colors.primary} size={16} />
+              <Text style={{ color: colors.primary, fontFamily: 'regular' }}>
+                {fetchingSim ? 'Checking...' : 'Get from phone'}
+              </Text>
+            </Button>
+          ) : null}
+
           <Button
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
@@ -142,6 +205,56 @@ const PhoneNumberForm = () => {
             </Text>
           </Button>
         </View>
+
+        {Platform.OS === 'android' ? (
+          <AlertDialog open={showSimPicker} onOpenChange={setShowSimPicker}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle style={{ color: colors.primary, fontFamily: 'regular' }}>
+                  Choose a SIM
+                </AlertDialogTitle>
+                <AlertDialogDescription style={{ fontFamily: 'light' }}>
+                  This device has multiple SIMs. Pick the number to use.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+
+              <View className="gap-2">
+                {simOptions.map((sim, index) => (
+                  <Button
+                    key={`${sim.slotIndex}-${index}`}
+                    variant="outline"
+                    disabled={!sim.number}
+                    onPress={() => {
+                      if (!sim.number) return;
+                      setValue('number', sim.number, { shouldValidate: true });
+                      setShowSimPicker(false);
+                      toast.success('Number filled in from your SIM.');
+                    }}
+                    className="flex-row items-center justify-between"
+                    style={{ borderColor: colors.border, backgroundColor: colors.surface }}>
+                    <View className="flex-row items-center gap-2">
+                      <Feather name="smartphone" color={colors.secondary} size={16} />
+                      <Text style={{ color: colors.text, fontFamily: 'regular' }}>
+                        {sim.carrierName}
+                      </Text>
+                    </View>
+                    <Text style={{ color: sim.number ? colors.muted : colors.destructive, fontFamily: 'light' }}>
+                      {sim.number ?? 'number not available'}
+                    </Text>
+                  </Button>
+                ))}
+              </View>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel
+                  style={{ borderColor: colors.primary, borderWidth: 2 }}
+                  className="w-full">
+                  <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Cancel</Text>
+                </AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : null}
       </View>
 
       <View className="mt-2">

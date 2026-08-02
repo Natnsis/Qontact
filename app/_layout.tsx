@@ -8,6 +8,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import { useColorScheme, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
 import { Toaster } from 'sonner-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -48,6 +50,10 @@ export default function RootLayout() {
     }
   }, [appIsReady, fontsLoaded, fontError]);
 
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(palette.background);
+  }, [palette.background]);
+
   if (!appIsReady || (!fontsLoaded && !fontError)) {
     return null;
   }
@@ -57,6 +63,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <View style={{ flex: 1, backgroundColor: palette.background }}>
           <ThemeProvider value={NAV_THEME[colorScheme]}>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.background } }} />
             <PortalHost />
             <Toaster />

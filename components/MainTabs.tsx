@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '@/components/Header';
 import ShareOptions from '@/components/ShareOptions';
@@ -14,14 +15,21 @@ const MainTabs = () => {
 
   return (
     <SafeAreaView style={{ backgroundColor: colors.background, flex: 1 }}>
-      <Header face={activeTab} onChange={setActiveTab} />
-      {
+      <View className="px-4 pb-1 pt-2">
+        <Text style={{ fontFamily: 'bold', fontSize: 20, color: colors.text }}>Linksy</Text>
+      </View>
+
+      <View style={{ flex: 1 }}>
         {
-          configure: <ConfigureOption />,
-          share: <ShareOptions />,
-          scan: <ScanOptions />,
-        }[activeTab]
-      }
+          {
+            configure: <ConfigureOption />,
+            share: <ShareOptions />,
+            scan: <ScanOptions />,
+          }[activeTab]
+        }
+      </View>
+
+      <Header face={activeTab} onChange={setActiveTab} />
     </SafeAreaView>
   );
 };

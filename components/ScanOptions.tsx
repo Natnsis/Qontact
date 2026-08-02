@@ -72,30 +72,50 @@ const ScanOptions = () => {
     const parsed = parseQrPayload(payload);
     setScanResult(parsed);
 
-    if (parsed.kind === 'url' && parsed.actionUrl) {
-      try {
+    try {
+      if (parsed.contactPayload) {
+        const granted = await requestContactsPermission();
+        if (!granted) {
+          toast.error('Permission denied. Please allow contacts access in settings.');
+          return;
+        }
+        const contact: Contacts.Contact = {
+          contactType: Contacts.ContactTypes.Person,
+          name: parsed.contactPayload.name ?? parsed.contactPayload.phone ?? '',
+          ...(parsed.contactPayload.name ? { firstName: parsed.contactPayload.name } : {}),
+          ...(parsed.contactPayload.phone
+            ? {
+                phoneNumbers: [
+                  {
+                    number: parsed.contactPayload.phone,
+                    label: 'mobile',
+                  },
+                ],
+              }
+            : {}),
+        };
+        await Contacts.presentFormAsync(undefined, contact, { isNew: true });
+        return;
+      }
+
+      if (parsed.actionUrl) {
         const canOpen = await Linking.canOpenURL(parsed.actionUrl);
         if (!canOpen) {
           toast.error('Detected a link but this device cannot open it.');
           return;
         }
-
         await Linking.openURL(parsed.actionUrl);
         return;
-      } catch (error) {
-        toast.error('Could not open this QR link');
-        return;
       }
-    }
 
-    toast.success(
-      parsed.actionUrl
-        ? 'Contact info detected — tap the action below.'
-        : 'QR scanned. View decoded content below.'
-    );
-    setTimeout(() => {
-      isOpeningRef.current = false;
-    }, 1600);
+      toast.success('QR scanned. View decoded content below.');
+    } catch (error) {
+      toast.error('Could not complete this action.');
+    } finally {
+      setTimeout(() => {
+        isOpeningRef.current = false;
+      }, 1600);
+    }
   };
 
   return (
@@ -104,7 +124,7 @@ const ScanOptions = () => {
       contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 12, paddingTop: 12 }}>
       <Badge variant="secondary">
         <Text style={{ color: colors.light, fontFamily: 'regular' }} className="p-2">
-          Scan QR codes inside Linksy when the default camera app cannot read them.
+          Point the camera at a QR code — Linksy saves the contact or opens the link instantly.
         </Text>
       </Badge>
 
@@ -191,52 +211,12 @@ const ScanOptions = () => {
           ))}
 
           {(scanResult.contactPayload || scanResult.actionUrl) ? (
-            <Button
-              onPress={async () => {
-                try {
-                  if (scanResult.contactPayload) {
-                    const granted = await requestContactsPermission();
-                    if (!granted) {
-                      toast.error('Permission denied. Please allow contacts access in settings.');
-                      return;
-                    }
-                    const contact: Contacts.Contact = {
-                      contactType: Contacts.ContactTypes.Person,
-                      name: scanResult.contactPayload.name ?? scanResult.contactPayload.phone ?? '',
-                      ...(scanResult.contactPayload.name
-                        ? { firstName: scanResult.contactPayload.name }
-                        : {}),
-                      ...(scanResult.contactPayload.phone
-                        ? {
-                            phoneNumbers: [
-                              {
-                                number: scanResult.contactPayload.phone,
-                                label: 'mobile',
-                              },
-                            ],
-                          }
-                        : {}),
-                    };
-                    await Contacts.presentFormAsync(undefined, contact, {
-                      isNew: true,
-                    });
-                  } else if (scanResult.actionUrl) {
-                    const canOpen = await Linking.canOpenURL(scanResult.actionUrl);
-                    if (!canOpen) {
-                      toast.error('Unable to perform this action here.');
-                      return;
-                    }
-                    await Linking.openURL(scanResult.actionUrl);
-                  }
-                } catch {
-                  toast.error('Action failed.');
-                }
-              }}
-              style={{ backgroundColor: colors.secondary }}>
-              <Text style={{ color: colors.dark, fontFamily: 'regular' }}>
-                {scanResult.actionLabel}
+            <View className="flex-row items-center gap-2">
+              <Feather name="check-circle" color={colors.secondary} size={14} />
+              <Text style={{ color: colors.secondary, fontFamily: 'light', fontSize: 12 }}>
+                {scanResult.actionLabel ?? 'Action completed'} automatically.
               </Text>
-            </Button>
+            </View>
           ) : null}
         </View>
       ) : null}
