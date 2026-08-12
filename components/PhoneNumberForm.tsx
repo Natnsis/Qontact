@@ -122,8 +122,10 @@ const PhoneNumberForm = () => {
 
   return (
     <View>
-      <View className="mt-2 mx-2 p-2">
-        <View className="mb-5">
+      <View
+        className="mb-5 rounded-lg border p-3"
+        style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+        <View>
           <Label
             style={{
               color: colors.muted,
@@ -146,12 +148,12 @@ const PhoneNumberForm = () => {
             )}
           />
           {errors.name &&
-            <Text style={{ color: colors.primary, fontFamily: 'light' }}>
+            <Text style={{ color: colors.destructive, fontFamily: 'light', marginTop: 4 }}>
               {errors.name.message}
             </Text>}
         </View>
 
-        <View className="mb-5">
+        <View className="mt-4">
           <Label
             style={{
               color: colors.muted,
@@ -176,17 +178,18 @@ const PhoneNumberForm = () => {
             )}
           />
           {errors.number &&
-            <Text style={{ color: colors.primary, fontFamily: 'light' }}>
+            <Text style={{ color: colors.destructive, fontFamily: 'light', marginTop: 4 }}>
               {errors.number.message}
             </Text>}
         </View>
 
-        <View className={Platform.OS === 'android' ? 'flex-row justify-between' : 'flex-row justify-end'}>
+        <View className={Platform.OS === 'android' ? 'mt-5 flex-row flex-wrap gap-3' : 'mt-5 flex-row justify-end'}>
           {Platform.OS === 'android' ? (
             <Button
               onPress={handleGetFromPhone}
               disabled={fetchingSim}
               variant="outline"
+              className="flex-1 flex-row"
               style={{ borderColor: colors.primary, backgroundColor: colors.surface }}>
               <Feather name="smartphone" color={colors.primary} size={16} />
               <Text style={{ color: colors.primary, fontFamily: 'regular' }}>
@@ -198,6 +201,7 @@ const PhoneNumberForm = () => {
           <Button
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
+            className={Platform.OS === 'android' ? 'flex-1 flex-row' : 'flex-row'}
             style={{ backgroundColor: colors.secondary }}>
             <Feather name="check" color={colors.background} size={16} />
             <Text style={{ color: colors.background, fontFamily: 'regular' }}>
@@ -257,28 +261,25 @@ const PhoneNumberForm = () => {
         ) : null}
       </View>
 
-      <View className="mt-2">
-        <View className="flex-row items-center">
-          <Text
-            style={{
-              color: colors.primary,
-              fontFamily: 'regular',
-              fontSize: 16
-            }}>
-            Saved Numbers
-          </Text>
-        </View>
-        {contactNumbers && contactNumbers.length !== 0 ?
-          <View>
-            {contactNumbers.map((c, index) => (
-              <View key={index} className="mb-2">
-                <View className="flex-row items-center gap-2">
+      <View>
+        <Text style={{ color: colors.text, fontFamily: 'bold', fontSize: 16 }}>
+          Saved Numbers
+        </Text>
+
+        <View className="mt-2">
+          {contactNumbers && contactNumbers.length !== 0 ?
+            contactNumbers.map((c, index) => (
+              <View
+                key={index}
+                className="mb-2 rounded-lg border p-3"
+                style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+                <View className="flex-row items-center gap-3">
                   <Feather
                     name='phone'
                     color={colors.background}
                     style={{ backgroundColor: colors.secondary }}
                     className="p-2 rounded-full" />
-                  <View>
+                  <View className="flex-1">
                     <Text
                       style={{ color: colors.text, fontFamily: 'regular' }}>
                       {c.name}
@@ -289,61 +290,60 @@ const PhoneNumberForm = () => {
                     </Text>
                   </View>
                 </View>
-                <View className="flex-row gap-2 items-center justify-between">
-                  <View>
-                    <Text
-                      style={{ color: colors.muted, fontFamily: 'light' }}>
-                      {c.createdAt}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center gap-2">
-                    <AlertDialog>
-                      <AlertDialogTrigger
-                        style={{ backgroundColor: colors.destructive }}
-                        className="h-10 w-10 items-center justify-center rounded-md"
-                      >
-                        <Feather name="trash" color="white" />
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle style={{ color: colors.primary, fontFamily: 'regular' }}>
-                            Delete this number?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription style={{ fontFamily: 'light' }}>
-                            This will remove {c.name}'s phone number from this device.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter className="flex-row justify-between">
-                          <AlertDialogCancel
-                            style={{ borderColor: colors.primary, borderWidth: 2 }}
-                            className="w-[45%]">
-                            <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Cancel</Text>
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            className="w-[45%]"
-                            style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.background }}
-                            onPress={async () => {
-                              await deleteNumberById(c.id)
-                              queryClient.invalidateQueries({ queryKey: ['contacts'] });
-                            }}
-                          >
-                            <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Continue</Text>
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </View>
+                <View className="mt-3 flex-row gap-2 items-center justify-between">
+                  <Text
+                    style={{ color: colors.muted, fontFamily: 'light', fontSize: 11 }}>
+                    {c.createdAt}
+                  </Text>
+                  <AlertDialog>
+                    <AlertDialogTrigger
+                      style={{ backgroundColor: colors.destructive }}
+                      className="h-10 w-10 items-center justify-center rounded-md"
+                    >
+                      <Feather name="trash" color="white" />
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle style={{ color: colors.primary, fontFamily: 'regular' }}>
+                          Delete this number?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription style={{ fontFamily: 'light' }}>
+                          This will remove {c.name}'s phone number from this device.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="flex-row justify-between">
+                        <AlertDialogCancel
+                          style={{ borderColor: colors.primary, borderWidth: 2 }}
+                          className="w-[45%]">
+                          <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Cancel</Text>
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          className="w-[45%]"
+                          style={{ borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.background }}
+                          onPress={async () => {
+                            await deleteNumberById(c.id)
+                            queryClient.invalidateQueries({ queryKey: ['contacts'] });
+                          }}
+                        >
+                          <Text style={{ color: colors.primary, fontFamily: 'regular' }}>Continue</Text>
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </View>
               </View>
-            ))}
-          </View>
-          :
-          <Text
-            style={{ fontFamily: 'light', color: colors.primary }}
-            className="text-center mt-2">
-            no numbers saved.
-          </Text>
-        }
+            ))
+            :
+            <View
+              className="rounded-lg border border-dashed p-4"
+              style={{ borderColor: colors.border }}>
+              <Text
+                style={{ fontFamily: 'light', color: colors.muted, textAlign: 'center' }}>
+                No numbers saved yet.
+              </Text>
+            </View>
+          }
+        </View>
       </View>
     </View >
   )
