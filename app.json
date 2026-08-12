@@ -7,21 +7,21 @@
     "icon": "./assets/images/icon.png",
     "scheme": "linksy",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#EEF0F3",
+    "backgroundColor": "#F3F6FA",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#EEF0F3"
+      "backgroundColor": "#F3F6FA"
     },
     "assetBundlePatterns": ["**/*"],
     "android": {
       "package": "com.linksy.app",
       "edgeToEdgeEnabled": true,
-      "backgroundColor": "#EEF0F3",
+      "backgroundColor": "#F3F6FA",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#EEF0F3"
+        "backgroundColor": "#F3F6FA"
       },
       "permissions": [
         "android.permission.CAMERA",

@@ -44,7 +44,7 @@ class SimNumbersModule : Module() {
     } ?: return emptyList()
 
     return subscriptions.mapIndexed { index, info ->
-      val number = readLine1Number(info.subscriptionId)
+      val number = readNumber(info.subscriptionId, subscriptionManager)
       val carrierName = info.carrierName?.toString()?.takeIf { it.isNotBlank() }
         ?: info.displayName?.toString()?.takeIf { it.isNotBlank() }
         ?: "SIM ${index + 1}"
@@ -55,6 +55,45 @@ class SimNumbersModule : Module() {
         "number" to number
       )
     }
+  }
+
+  // line1Number is unreliable on modern Android — many carriers/OEMs leave it blank
+  // even once permission is granted. Prefer the newer SubscriptionManager APIs, which
+  // read the number straight off the UICC/carrier/IMS, and fall back to line1Number
+  // for older devices where those APIs don't exist.
+  private fun readNumber(subscriptionId: Int, subscriptionManager: SubscriptionManager): String? {
+    if (Build.VERSION.SDK_INT >= 33) {
+      try {
+        subscriptionManager.getPhoneNumber(subscriptionId)
+          .trim()
+          .takeIf { it.isNotBlank() }
+          ?.let { return it }
+      } catch (e: SecurityException) {
+        // fall through to legacy lookup
+      } catch (e: IllegalArgumentException) {
+        // fall through to legacy lookup
+      }
+    } else if (Build.VERSION.SDK_INT >= 30) {
+      val sources = intArrayOf(
+        SubscriptionManager.PHONE_NUMBER_SOURCE_UICC,
+        SubscriptionManager.PHONE_NUMBER_SOURCE_CARRIER,
+        SubscriptionManager.PHONE_NUMBER_SOURCE_IMS
+      )
+      for (source in sources) {
+        try {
+          val number = subscriptionManager.getPhoneNumber(subscriptionId, source)
+            .trim()
+            .takeIf { it.isNotBlank() }
+          if (number != null) return number
+        } catch (e: SecurityException) {
+          // try the next source
+        } catch (e: IllegalArgumentException) {
+          // try the next source
+        }
+      }
+    }
+
+    return readLine1Number(subscriptionId)
   }
 
   private fun readLine1Number(subscriptionId: Int): String? {
