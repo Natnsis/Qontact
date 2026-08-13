@@ -62,16 +62,19 @@ const PhoneNumberForm = () => {
 
     setFetchingSim(true);
     try {
-      const granted = await PermissionsAndroid.request(
+      // Reading the SIM's subscription info requires READ_PHONE_STATE, and reading the
+      // number itself requires READ_PHONE_NUMBERS — Android silently returns nothing
+      // (no error) if either is missing, so both must be requested together.
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
         PermissionsAndroid.PERMISSIONS.READ_PHONE_NUMBERS,
-        {
-          title: 'Phone number access',
-          message: 'Linksy needs access to your phone number to fill it in automatically.',
-          buttonPositive: 'Allow',
-        }
-      );
+      ]);
 
-      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      const allGranted =
+        granted[PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE] === PermissionsAndroid.RESULTS.GRANTED &&
+        granted[PermissionsAndroid.PERMISSIONS.READ_PHONE_NUMBERS] === PermissionsAndroid.RESULTS.GRANTED;
+
+      if (!allGranted) {
         toast.error('Permission denied. Please allow phone access in settings.');
         return;
       }

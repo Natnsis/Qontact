@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Linking, ScrollView, Text, View, Platform } from 'react-native';
 import { toast } from 'sonner-native';
 import { Button } from './ui/button';
-import { Badge } from './ui/badge';
 import { parseQrPayload, ParsedQrData } from '@/lib/qr';
 import {
   AlertDialog,
@@ -122,11 +121,24 @@ const ScanOptions = () => {
     <ScrollView
       className="flex-1"
       contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 12, paddingTop: 12 }}>
-      <Badge variant="secondary">
-        <Text style={{ color: colors.light, fontFamily: 'regular' }} className="p-2">
+      <View
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          shadowColor: '#000',
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 2 },
+          elevation: 2,
+        }}
+        className="flex-row items-center gap-3 rounded-2xl border p-4">
+        <Feather name="info" color={colors.secondary} size={18} />
+        <Text
+          style={{ color: colors.text, fontFamily: 'regular', fontSize: 13 }}
+          className="flex-1">
           Point the camera at a QR code — Linksy saves the contact or opens the link instantly.
         </Text>
-      </Badge>
+      </View>
 
       <View
         style={{
